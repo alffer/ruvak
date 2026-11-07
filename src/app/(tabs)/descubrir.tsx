@@ -1,0 +1,119 @@
+import { useMemo, useState } from 'react';
+import { View } from 'react-native';
+import { DiscoveryCard } from '@/components/Place';
+import { RuvakAvatar, RuvakEmptyState } from '@/components/Ruvak';
+import { Chip, ChipRow, ErrorState, H1, InlineNotice, LinkButton, P, Row, Screen, SkeletonList } from '@/components/ui';
+import { getDiscovery, getMyPlaces, hideDiscovery, savePlace, unhideAllDiscovery } from '@/lib/data';
+import { nameKey } from '@/lib/dedupe';
+import { rankDiscovery, reasonFor } from '@/lib/recommend';
+import { useCategoryName, useSession } from '@/lib/session';
+import { space } from '@/lib/tokens';
+import type { DiscoveryKind } from '@/lib/types';
+import { useLoad } from '@/lib/useLoad';
+
+type KindFilter = 'all' | 'news' | 'recommended' | 'featured' | 'plan';
+const KIND_FILTERS: { key: KindFilter; label: string; kinds: DiscoveryKind[] }[] = [
+  { key: 'all', label: 'Todo', kinds: [] },
+  { key: 'news', label: 'Aperturas y anuncios', kinds: ['just_opened', 'upcoming_opening', 'announced'] },
+  { key: 'recommended', label: 'Recomendados', kinds: ['recommended'] },
+  { key: 'featured', label: 'Destacados', kinds: ['featured'] },
+  { key: 'plan', label: 'Planes', kinds: ['plan'] },
+];
+
+/** Descubrir: contenido editorial curado de la ciudad activa (RF-09). */
+export default function Discover() {
+  const { activeCity, profile, interests, categories, bump } = useSession();
+  const categoryName = useCategoryName();
+  const items = useLoad(() => (activeCity ? getDiscovery(activeCity.id) : Promise.resolve([])), [activeCity?.id]);
+  const saved = useLoad(getMyPlaces, []);
+  const [kind, setKind] = useState<KindFilter>('all');
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [zone, setZone] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const savedIds = useMemo(() => new Set((saved.data ?? []).map((p) => p.id)), [saved.data]);
+  const ctx = { personalizationEnabled: !!profile?.personalizationEnabled, interestIds: interests, categoryName, saved: saved.data ?? [] };
+  const ranked = rankDiscovery(items.data ?? [], ctx);
+  const zones = [...new Set(ranked.map((i) => i.place?.zone).filter((z): z is string => !!z))].sort();
+  const usedCats = categories.filter((c) => ranked.some((i) => i.place?.categoryId === c.id));
+  const kinds = KIND_FILTERS.find((k) => k.key === kind)!.kinds;
+  const visible = ranked.filter(
+    (i) =>
+      (!kinds.length || kinds.includes(i.kind)) &&
+      (categoryId == null || i.place?.categoryId === categoryId) &&
+      (!zone || nameKey(i.place?.zone) === nameKey(zone)),
+  );
+
+  async function onSave(placeId: number, title: string) {
+    await savePlace(placeId);
+    setMessage(`«${title}» guardado en Mis lugares.`);
+    bump();
+  }
+  async function onHide(id: number) {
+    await hideDiscovery(id);
+    setMessage('Recomendación oculta.');
+    items.reload();
+  }
+
+  return (
+    <Screen>
+      <Row gap={space[3]}>
+        <RuvakAvatar size={44} />
+        <View style={{ flex: 1, gap: 2 }}>
+          <H1>Descubrir</H1>
+          <P muted>He encontrado algunas pistas por {activeCity?.name ?? 'tu ciudad'}.</P>
+        </View>
+      </Row>
+
+      <View style={{ gap: space[1] }}>
+        <ChipRow>
+          {KIND_FILTERS.map((k) => (
+            <Chip key={k.key} label={k.label} selected={kind === k.key} onPress={() => setKind(k.key)} />
+          ))}
+        </ChipRow>
+        {usedCats.length > 1 ? (
+          <ChipRow>
+            <Chip label="Todas las categorías" selected={categoryId == null} onPress={() => setCategoryId(null)} />
+            {usedCats.map((c) => (
+              <Chip key={c.id} label={c.name} selected={categoryId === c.id} onPress={() => setCategoryId(categoryId === c.id ? null : c.id)} />
+            ))}
+          </ChipRow>
+        ) : null}
+        {zones.length > 1 ? (
+          <ChipRow>
+            <Chip label="Todas las zonas" selected={zone == null} onPress={() => setZone(null)} />
+            {zones.map((z) => (
+              <Chip key={z} label={z} selected={zone === z} onPress={() => setZone(zone === z ? null : z)} icon="pin" />
+            ))}
+          </ChipRow>
+        ) : null}
+      </View>
+
+      {message ? <InlineNotice tone="success">{message}</InlineNotice> : null}
+      {items.error ? <ErrorState message={items.error} onRetry={items.reload} /> : null}
+      {items.loading && !items.data ? <SkeletonList rows={3} /> : null}
+
+      {items.data && !visible.length ? (
+        <RuvakEmptyState
+          title={ranked.length ? 'Nada con estos filtros' : 'Todavía no hay pistas aquí'}
+          text={ranked.length ? 'Prueba con otra categoría o zona.' : 'El equipo editorial irá publicando lugares, aperturas y planes de esta ciudad.'}
+          secondary={<LinkButton label="Mostrar lo que ocultaste" onPress={() => unhideAllDiscovery().then(items.reload)} />}
+        />
+      ) : null}
+
+      <View style={{ gap: space[4] }}>
+        {visible.map((i) => (
+          <DiscoveryCard
+            key={i.id}
+            item={i}
+            reason={reasonFor(i, ctx)}
+            saved={i.placeId != null && savedIds.has(i.placeId)}
+            onSave={() => i.placeId != null && onSave(i.placeId, i.place?.name ?? i.title)}
+            onHide={() => onHide(i.id)}
+          />
+        ))}
+      </View>
+      {visible.length ? <LinkButton label="Mostrar lo que ocultaste" onPress={() => unhideAllDiscovery().then(items.reload)} /> : null}
+    </Screen>
+  );
+}
