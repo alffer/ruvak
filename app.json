@@ -13,18 +13,38 @@
     "android": {
       "package": "com.ruvak.app",
       "versionCode": 1,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundColor": "#17191D"
+      }
     },
     "web": {
       "name": "RUVAK",
       "shortName": "RUVAK",
       "output": "single",
       "themeColor": "#17191D",
-      "backgroundColor": "#17191D"
+      "backgroundColor": "#17191D",
+      "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-router", "expo-status-bar", "expo-font", "expo-image"],
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-font",
+      "expo-image",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#17191D"
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": false
-    }
+    },
+    "icon": "./assets/icon.png"
   }
 }

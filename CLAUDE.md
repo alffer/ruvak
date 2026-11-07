@@ -19,8 +19,8 @@ documentación al día en el mismo commit que cualquier cambio de comportamiento
   fecha. Lo no comprobado se marca «Sin verificar». La mascota no afirma haber visitado nada.
 - **Privacidad**: notas, estados y listas viven en tablas propias del usuario con RLS. Cualquier tabla
   nueva con datos personales necesita políticas y una comprobación en `scripts/check-rls.sql`.
-- **Mascota**: las siluetas de `src/components/Ruvak.tsx` son provisionales; los assets reales salen de
-  la lámina maestra y no se redibujan (ver `docs/mascota.md`).
+- **Mascota**: ilustraciones en `assets/ruvak/`, generadas desde `assets/ruvak/originales/` con
+  `node scripts/prepare-ruvak.mjs`. Solo se escalan y recortan; nunca se redibujan (ver `docs/mascota.md`).
 - **Expo cambia mucho**: antes de usar una API de Expo, consulta la documentación de la versión
   instalada (ver `AGENTS.md`). Instala con `npx expo install`.
 

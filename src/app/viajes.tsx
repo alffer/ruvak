@@ -7,7 +7,7 @@ export default function Trips() {
   return (
     <Screen>
       <RuvakEmptyState
-        form="rook"
+        pose="grajo-vuelo"
         title="Una pista para tu próxima escapada"
         text="Pronto podrás crear viajes a otras ciudades, organizar sus lugares y llevarte tus preferencias. Tus guardados de hoy ya están listos para entonces."
         action={{ label: 'Ver mis lugares', onPress: () => router.navigate('/lugares') }}

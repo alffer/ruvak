@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { RuvakAvatar } from '@/components/Ruvak';
+import { RuvakIllustration } from '@/components/Ruvak';
 import { Button, Field, InlineNotice, LinkButton, Overline, P, Screen } from '@/components/ui';
 import { authErrorMessage, validEmail } from '@/lib/authErrors';
 import { supabase } from '@/lib/supabase';
@@ -25,9 +25,9 @@ export default function SignIn() {
 
   return (
     <Screen contentStyle={{ maxWidth: 440, justifyContent: 'center', flexGrow: 1 }}>
-      <View style={{ gap: space[3], paddingTop: space[10] }}>
-        <RuvakAvatar size={72} />
-        <Text style={{ fontFamily: fonts.heading, fontSize: 44, color: colors.text, letterSpacing: 2 }} accessibilityRole="header">
+      <View style={{ gap: space[3], paddingTop: space[6] }}>
+        <RuvakIllustration pose="gato-sentado" height={200} />
+        <Text style={{ fontFamily: fonts.heading, fontSize: 48, lineHeight: 52, color: colors.text, letterSpacing: 4 }} accessibilityRole="header">
           RUVAK
         </Text>
         <Overline color={colors.lime}>Gijón · tu mapa personal</Overline>

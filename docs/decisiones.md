@@ -12,4 +12,4 @@
 | 2026-11-07 | Pegar URL **no** descarga la página | Sin scraping (§8): solo se lee la propia URL (tipo, nombre y coordenadas de Google Maps si vienen en ella) |
 | 2026-11-07 | Semilla con lugares reales, «Sin verificar» y sin horarios ni aperturas | Criterio 19: nada inventado presentado como real |
 | 2026-11-07 | Azul de marca solo como fondo de botón; variantes claras para texto | El azul de marca no llega a 3:1 sobre fondo oscuro |
-| 2026-11-07 | Mascota provisional en SVG geométrico | Falta la lámina maestra; no se reinterpreta el personaje |
+| 2026-11-07 | Mascota con las ilustraciones de la usuaria (WebP con alfa) e iconos generados desde la cabeza del gato | Identidad real; los originales se conservan intactos y los derivados se regeneran con `prepare-ruvak.mjs` |

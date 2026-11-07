@@ -1,8 +1,9 @@
 import { Tabs } from 'expo-router/js-tabs';
-import { Text, useWindowDimensions } from 'react-native';
+import { Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CitySwitcher } from '@/components/CitySwitcher';
 import { Icon, type IconName } from '@/components/Icon';
+import { RuvakAvatar } from '@/components/Ruvak';
 import { colors, fonts, layout, typography } from '@/lib/tokens';
 
 /**
@@ -34,6 +35,12 @@ export default function TabsLayout() {
         headerTitleStyle: { fontFamily: fonts.heading },
         headerShadowVisible: false,
         headerRight: () => <CitySwitcher />,
+        // Marca en cada pestaña: la cabeza de RUVAK junto al título.
+        headerLeft: () => (
+          <View style={{ marginLeft: 12 }}>
+            <RuvakAvatar size={34} />
+          </View>
+        ),
         sceneStyle: { backgroundColor: colors.bg },
         tabBarActiveTintColor: colors.blueText,
         tabBarInactiveTintColor: colors.textSecondary,

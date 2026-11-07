@@ -19,7 +19,7 @@ src/app/                pantallas (rutas)
   lista/[id].tsx        lista sugerida o propia
   admin/                panel editorial
 src/components/         ui (Button, Chip, Field, Card, Badge, Segmented, ToggleRow, InlineNotice, ErrorState…),
-                        Icon, Place (tarjetas y etiquetas), PlaceForm, CitySwitcher, Ruvak (mascota provisional),
+                        Icon, Place (tarjetas y etiquetas), PlaceForm, CitySwitcher, Ruvak (ilustraciones de la mascota),
                         SetupNeeded, map/ (MapCanvas web y móvil)
 src/lib/                sin UI: tokens, types, supabase, session, data, useLoad, format, authErrors,
                         y lógica pura comprobada por scripts: dedupe, takeout, urlParse, filters, recommend
@@ -56,7 +56,8 @@ docs/                   esta documentación
 | react-native-webview | Leaflet en móvil |
 | expo-document-picker, expo-file-system | Elegir y leer el archivo de Takeout (solo lectura) |
 | expo-font, @expo-google-fonts/inter, @expo-google-fonts/space-grotesk | Tipografías de marca (OFL) |
-| lucide-react-native, react-native-svg | Iconos lineales (como Sandow) y siluetas de la mascota |
+| lucide-react-native, react-native-svg | Iconos lineales (como Sandow) |
+| sharp (dev) | Genera los assets de la mascota y los iconos (`scripts/prepare-ruvak.mjs`) |
 | expo-image | Fotos de fichas (solo si existen y tienen permiso) |
 
 ## Comprobaciones

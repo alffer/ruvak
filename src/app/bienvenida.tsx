@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View } from 'react-native';
-import { RuvakAvatar } from '@/components/Ruvak';
+import { RuvakIllustration } from '@/components/Ruvak';
 import { Button, Chip, H1, H2, InlineNotice, P, Row, Screen, ToggleRow } from '@/components/ui';
 import { setInterests, updateProfile } from '@/lib/data';
 import { useSession } from '@/lib/session';
@@ -33,7 +33,8 @@ export default function Onboarding() {
   return (
     <Screen contentStyle={{ maxWidth: 640 }}>
       <View style={{ gap: space[3], paddingTop: space[8] }}>
-        <RuvakAvatar size={64} />
+        {/* Gato a pie por tu ciudad, grajo cuando viajes: la idea de RUVAK en una imagen. */}
+        <RuvakIllustration pose="transformacion" height={170} maxWidth={600} />
         <H1>Hola{profile?.displayName ? `, ${profile.displayName}` : ''}. Vamos a preparar tu mapa.</H1>
         <P muted>Dos preguntas rápidas. Puedes cambiarlo todo después en Perfil.</P>
       </View>

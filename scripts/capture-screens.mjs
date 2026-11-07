@@ -226,6 +226,7 @@ const SHOTS = [
   ['08-importar', '/importar'],
   ['09-perfil', '/perfil'],
   ['10-admin', '/admin'],
+  ['11-viajes', '/viajes'],
 ];
 const VIEWPORTS = [
   ['movil', { width: 390, height: 844 }],

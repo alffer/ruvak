@@ -1,25 +1,34 @@
 # Mascota: RUVAK
 
 Explorador urbano metamórfico: **gato** a pie por la ciudad y **grajo** entre ciudades. Negro tinta, ojos lima
-eléctrico, siluetas afiladas. Rasgos invariables: documento de producto §9.
+eléctrico, reflejos crema/dorados. Rasgos invariables: documento de producto §9.
 
-## Estado actual: provisional
+## Archivos
 
-`src/components/Ruvak.tsx` dibuja **siluetas geométricas provisionales** (SVG) porque la lámina maestra del
-personaje no está en el repositorio. No son el diseño final ni pretenden reinterpretarlo.
+- `assets/ruvak/originales/`: las imágenes de la usuaria, **tal cual** (no se tocan).
+- `assets/ruvak/ruvak_[familia]_[variante]_v1.webp`: assets de producción. Los genera
+  `node scripts/prepare-ruvak.mjs` (recorta el margen transparente y limita a 900 px, 1600 px la secuencia).
+- `assets/icon.png`, `android-icon-foreground.png`, `favicon.png`, `splash-icon.png`: la cabeza del gato sobre negro
+  tinta o transparente, generados por el mismo script.
 
-Para integrar los assets reales:
+Los originales ya traían canal alfa real (sin cuadrícula ni halos; comprobado al importarlos). Solo se escalan,
+recortan y componen: **nunca se redibujan**.
 
-1. Separar y limpiar los PNG desde la lámina maestra (canal alfa real, sin halos, sin cuadrícula como transparencia).
-2. Guardarlos en `assets/ruvak/` con la convención `ruvak_[familia]_[variante]_[version].png`.
-3. Sustituir el SVG de `RuvakAvatar` por `<Image>` de `expo-image` manteniendo la API (`form`, `size`).
+## Poses disponibles (`src/components/Ruvak.tsx`)
 
-## Dónde aparece
+| Pose | Original | Dónde |
+| ---- | -------- | ----- |
+| `gato-cabeza` | gato-cabeza.webp | Avatar: cabecera de las pestañas, saludo de Inicio, Descubrir; iconos de la app |
+| `gato-sentado` | gato-sentado-astuto.webp | Entrar; estados vacíos |
+| `transformacion` | transformacion-gato-grajo.webp | Bienvenida (gato en tu ciudad, grajo cuando viajes) |
+| `grajo-vuelo` | grajo-vuelo.webp | Viajes |
+| `grajo-ataque` | grajo-ataque.webp | Disponible, sin usar todavía |
 
-| Lugar | Forma |
-| ----- | ----- |
-| Entrar, bienvenida, Inicio (saludo), Descubrir (cabecera) | Gato, tamaño contenido |
-| Estados vacíos (`RuvakEmptyState`) | Gato |
-| Viajes | Grajo |
+Para añadir una pose: original en `originales/`, entrada en `CHARACTER` de `prepare-ruvak.mjs`, ejecutar el script
+y añadirla a `POSES` en `Ruvak.tsx`.
 
-No aparece en tarjetas, marcadores del mapa, errores graves ni mensajes de privacidad.
+## Reglas de uso
+
+- Decorativa: oculta a lectores de pantalla; el texto lleva el mensaje.
+- No aparece en tarjetas, marcadores del mapa, errores graves ni mensajes de privacidad.
+- Variar poses en estados vacíos cuando haya más (dormido para «vacío», sorprendido para «novedad»…).
