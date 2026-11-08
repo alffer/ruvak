@@ -101,7 +101,7 @@ const byId = (id) => allPlaces.find((p) => p.id === id);
 const collections = [{ id: 10, user_id: UID, name: 'Cafés para trabajar', created_at: now, collection_places: [{ count: 1 }] }];
 const collectionPlaces = [{ collection_id: 10, place_id: 101 }];
 const discovery = [
-  [1, 1, 'featured', 'Atardecer en el Cerro de Santa Catalina', 'Sube a la escultura de Chillida y recorre el cerro. He encontrado algo por Cimavilla.'],
+  [1, 1, 'featured', 'Atardecer en el Cerro de Santa Catalina', 'Sube a la escultura de Chillida y recorre el cerro. Aquí tienes una pista por Cimavilla.'],
   [2, 2, 'recommended', 'Gijón romano bajo la plaza', 'Unas termas romanas en pleno barrio alto. Esto merece una visita.'],
   [3, 4, 'featured', 'Arquitectura monumental en Cabueñes', 'Un conjunto enorme para recorrer con calma.'],
   [4, 5, 'plan', 'Plan verde en Cabueñes', 'Combina el Jardín Botánico con la Universidad Laboral, que está al lado.'],

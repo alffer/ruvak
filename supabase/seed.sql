@@ -67,7 +67,7 @@ with c as (select id from public.cities where slug = 'gijon'),
 data (place, kind, title, summary) as (
   values
     ('Elogio del Horizonte', 'featured', 'Atardecer en el Cerro de Santa Catalina',
-     'Sube a la escultura de Chillida y recorre el cerro. He encontrado algo por Cimavilla.'),
+     'Sube a la escultura de Chillida y recorre el cerro. Aquí tienes una pista por Cimavilla.'),
     ('Termas romanas de Campo Valdés', 'recommended', 'Gijón romano bajo la plaza',
      'Unas termas romanas en pleno barrio alto. Esto merece una visita.'),
     ('Universidad Laboral', 'featured', 'Arquitectura monumental en Cabueñes',
