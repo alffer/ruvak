@@ -23,7 +23,7 @@ Referencia completa: [documento-producto.md](documento-producto.md). Aquí, lo i
 | `/lugares` (Guardados)    | Guardados: búsqueda (nombre, categoría, zona, nota, etiquetas), estados, categoría, zona, orden, archivados; pestaña Listas. |
 | `/lista/[id]`             | Una lista: sugerida (`pending`, `favorites`, `visited`) o propia (renombrar, borrar).                              |
 | `/lugar/[id]`             | Ficha: estado, favorito, listas, nota privada y etiquetas, información práctica, fuentes con fecha, archivar o borrar. |
-| `/lugar/nuevo`            | Añadir: pegar enlace (TikTok, Instagram, Google Maps, web) o alta manual. Avisa de posibles duplicados.            |
+| `/lugar/nuevo`            | Añadir: pegar enlace (TikTok, Instagram, Google Maps, web) o alta manual. Con un enlace de Google Maps sugiere dirección y categoría desde OpenStreetMap (con fuente y fecha). Avisa de posibles duplicados. |
 | `/lugar/editar/[id]`      | Editar la ficha (propia; las editoriales solo administradores).                                                    |
 | `/importar`               | Google Takeout: instrucciones, vista previa, selección, duplicados, resumen.                                       |
 | `/perfil`                 | Nombre, intereses, personalización, importar, exportar datos, cerrar sesión, borrar cuenta. |

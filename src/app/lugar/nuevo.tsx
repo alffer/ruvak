@@ -1,14 +1,15 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { View } from 'react-native';
 import { EMPTY_PLACE_FORM, formToInput, PlaceFields, type PlaceFormValue } from '@/components/PlaceForm';
 import { Badge, Button, Card, Chip, Field, H2, InlineNotice, P, Row, Screen, Segmented, ToggleRow } from '@/components/ui';
-import { addSource, createPlace, getCollections, getDedupeCandidates, savePlace, type SourceInput } from '@/lib/data';
+import { addSource, createPlace, getCategories, getCollections, getDedupeCandidates, savePlace, type SourceInput } from '@/lib/data';
 import { DUPLICATE_REASON_LABELS, findDuplicates, type DuplicateMatch } from '@/lib/dedupe';
-import { hostOf } from '@/lib/format';
+import { formatDate, hostOf } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { colors, space } from '@/lib/tokens';
 import { SOURCE_TYPE_LABELS } from '@/lib/types';
+import { OSM_ATTRIBUTION, suggestFromOsm } from '@/lib/osm';
 import { parseSharedUrl, type ParsedUrl } from '@/lib/urlParse';
 import { useLoad } from '@/lib/useLoad';
 
@@ -27,6 +28,15 @@ export default function NewPlace() {
   const [error, setError] = useState<string | null>(null);
   const [dups, setDups] = useState<DuplicateMatch[] | null>(null);
   const [busy, setBusy] = useState(false);
+  // Sugerencias de OpenStreetMap a partir de las coordenadas del enlace. `date` = cuándo se consultó.
+  const [osm, setOsm] = useState<{ status: 'idle' | 'loading' | 'done'; address: string | null; categorySlug: string | null; date: string }>({
+    status: 'idle',
+    address: null,
+    categorySlug: null,
+    date: '',
+  });
+  // Solo cuenta la última consulta: si se pega otro enlace mientras tanto, la respuesta anterior se descarta.
+  const osmRequest = useRef(0);
 
   function readUrl() {
     const p = parseSharedUrl(url);
@@ -35,6 +45,30 @@ export default function NewPlace() {
     setParsed(p);
     // Solo se rellena lo que viene en la propia URL; el resto lo completas tú.
     setForm((f) => ({ ...f, name: f.name || p.name || '', coords: f.coords || (p.lat != null ? `${p.lat}, ${p.lng}` : '') }));
+    const req = ++osmRequest.current;
+    if (p.lat == null || p.lng == null) {
+      setOsm({ status: 'idle', address: null, categorySlug: null, date: '' });
+      return;
+    }
+    setOsm({ status: 'loading', address: null, categorySlug: null, date: '' });
+    suggestFromOsm(p.lat, p.lng, p.name).then(async (s) => {
+      if (req !== osmRequest.current) return;
+      const categoryId = s.categorySlug ? ((await getCategories()).find((c) => c.slug === s.categorySlug)?.id ?? null) : null;
+      if (req !== osmRequest.current) return;
+      // Dirección y categoría solo se rellenan si están vacías: lo que ya elegiste no se pisa.
+      setForm((f) => ({ ...f, address: f.address || s.address || '', categoryId: f.categoryId ?? categoryId }));
+      setOsm({ status: 'done', address: s.address, categorySlug: s.categorySlug, date: new Date().toISOString() });
+    });
+  }
+
+  /** Texto del aviso: qué se ha sugerido, de dónde y cuándo; y qué no se ha encontrado. */
+  function osmMessage(): string {
+    const found = [osm.address ? 'la dirección' : null, osm.categorySlug ? 'la categoría' : null].filter(Boolean) as string[];
+    const missing = [osm.address ? null : 'la dirección', osm.categorySlug ? null : 'la categoría'].filter(Boolean) as string[];
+    const parts: string[] = [];
+    if (found.length) parts.push(`Sugerido por OpenStreetMap (${formatDate(osm.date)}): ${found.join(' y ')}. Compruébalo antes de guardar.`);
+    if (missing.length) parts.push(`No encontramos ${missing.join(' ni ')} en OpenStreetMap: complétalo tú.`);
+    return `${parts.join(' ')} ${OSM_ATTRIBUTION}.`;
   }
 
   const source: SourceInput | undefined = parsed
@@ -124,6 +158,12 @@ export default function NewPlace() {
               Completa el nombre y la categoría de lo que viste.
             </P>
           ) : null}
+          {osm.status === 'loading' ? (
+            <P muted style={{ fontSize: 14 }}>
+              Buscando dirección y categoría en OpenStreetMap…
+            </P>
+          ) : null}
+          {osm.status === 'done' ? <InlineNotice tone="info">{osmMessage()}</InlineNotice> : null}
         </Card>
       ) : null}
 

@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "check": "tsx scripts/check-dedupe.ts && tsx scripts/check-takeout.ts && tsx scripts/check-url.ts && tsx scripts/check-filters.ts && tsx scripts/check-contrast.ts",
+    "check": "tsx scripts/check-dedupe.ts && tsx scripts/check-takeout.ts && tsx scripts/check-url.ts && tsx scripts/check-filters.ts && tsx scripts/check-contrast.ts && tsx scripts/check-osm.ts",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" \"scripts/**/*.{ts,mjs,js}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\" \"scripts/**/*.{ts,mjs,js}\""
   },
