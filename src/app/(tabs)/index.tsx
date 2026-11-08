@@ -28,14 +28,20 @@ export default function Home() {
   const [q, setQ] = useState('');
 
   const all = (places.data ?? []).filter((p) => !p.archived);
-  const pending = all.filter((p) => p.me.status === 'pending');
-  const favorites = all.filter((p) => p.me.favorite);
-  const recommended = rankDiscovery(discovery.data ?? [], {
+  // Por visitar: guardados que aún no has marcado como visitados ni descartados. Los favoritos primero.
+  const toVisit = all
+    .filter((p) => p.me.status !== 'visited' && p.me.status !== 'discarded')
+    .sort((a, b) => Number(b.me.favorite) - Number(a.me.favorite) || b.me.savedAt.localeCompare(a.me.savedAt));
+  // Próximas aperturas y eventos: novedades publicadas de la ciudad (aperturas y planes).
+  const UPCOMING = ['just_opened', 'upcoming_opening', 'announced', 'plan'];
+  const upcoming = rankDiscovery(discovery.data ?? [], {
     personalizationEnabled: !!profile?.personalizationEnabled,
     interestIds: interests,
     categoryName,
     saved: all,
-  }).slice(0, 8);
+  })
+    .filter((i) => UPCOMING.includes(i.kind))
+    .slice(0, 8);
   const city = activeCity?.name ?? 'tu ciudad';
 
   const search = () => router.navigate({ pathname: '/descubrir', params: q.trim() ? { q: q.trim() } : {} });
@@ -73,13 +79,13 @@ export default function Home() {
       </Row>
 
       <View style={{ gap: space[3] }}>
-        <SectionHeader title="Recomendados para ti" action={{ label: 'Ver más', onPress: () => router.navigate('/descubrir') }} />
+        <SectionHeader title="Próximas aperturas y eventos" action={{ label: 'Ver todo', onPress: () => router.navigate('/descubrir') }} />
         {discovery.error ? <ErrorState message={discovery.error} onRetry={discovery.reload} /> : null}
         {discovery.loading && !discovery.data ? <SkeletonList rows={1} /> : null}
-        {discovery.data && !recommended.length ? <P muted>Aún no hay recomendaciones publicadas para {city}.</P> : null}
-        {recommended.length ? (
+        {discovery.data && !upcoming.length ? <P muted>Aún no hay aperturas ni eventos publicados para {city}.</P> : null}
+        {upcoming.length ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space[3], paddingRight: space[4] }}>
-            {recommended.map((i) => (
+            {upcoming.map((i) => (
               <RecommendedCard
                 key={i.id}
                 item={i}
@@ -91,6 +97,14 @@ export default function Home() {
         ) : null}
       </View>
 
+      <View style={{ gap: space[3] }}>
+        <SectionHeader title="Por visitar" action={{ label: 'Ver todos', onPress: () => router.navigate('/lugares') }} />
+        {toVisit.slice(0, 5).map((p) => (
+          <PlaceListItem key={p.id} place={p} categoryName={categoryName(p.categoryId)} />
+        ))}
+        {places.data && !toVisit.length ? <P muted>No tienes lugares pendientes. Añade uno con el «+».</P> : null}
+      </View>
+
       {places.error ? <ErrorState message={places.error} onRetry={places.reload} /> : null}
       {places.loading && !places.data ? <SkeletonList rows={2} /> : null}
       {places.data && all.length === 0 ? (
@@ -100,24 +114,6 @@ export default function Home() {
           text="Pega el enlace de un sitio que viste en TikTok, Instagram o Google Maps, o importa tus guardados."
           action={{ label: 'Guardar mi primer lugar', onPress: () => router.push('/lugar/nuevo') }}
         />
-      ) : null}
-
-      {pending.length ? (
-        <View style={{ gap: space[3] }}>
-          <SectionHeader title="Tu próxima parada" action={{ label: 'Ver todos', onPress: () => router.push('/lista/pending') }} />
-          {pending.slice(0, 3).map((p) => (
-            <PlaceListItem key={p.id} place={p} categoryName={categoryName(p.categoryId)} />
-          ))}
-        </View>
-      ) : null}
-
-      {favorites.length ? (
-        <View style={{ gap: space[3] }}>
-          <SectionHeader title="Favoritos" action={{ label: 'Ver todos', onPress: () => router.push('/lista/favorites') }} />
-          {favorites.slice(0, 3).map((p) => (
-            <PlaceListItem key={p.id} place={p} categoryName={categoryName(p.categoryId)} />
-          ))}
-        </View>
       ) : null}
     </Screen>
   );
