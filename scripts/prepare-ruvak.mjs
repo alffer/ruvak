@@ -24,6 +24,11 @@ const CHARACTER = [
   ['transformacion-gato-grajo.webp', 'ruvak_transformacion_secuencia_v1.webp'],
   ['grajo-ataque.webp', 'ruvak_grajo_ataque_v1.webp'],
   ['grajo-vuelo.webp', 'ruvak_grajo_vuelo_v1.webp'],
+  ['gato-sorprendido.webp', 'ruvak_gato_sorprendido_v1.webp'],
+  ['gato-sentado-mirada.webp', 'ruvak_gato_mirada_v1.webp'],
+  ['gato-caminando.webp', 'ruvak_gato_caminando_v1.webp'],
+  ['gato-de-pie.webp', 'ruvak_gato_de-pie_v1.webp'],
+  ['gato-sentado-perfil.webp', 'ruvak_gato_perfil_v1.webp'],
 ];
 
 for (const [src, out] of CHARACTER) {
