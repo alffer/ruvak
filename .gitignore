@@ -46,3 +46,7 @@ supabase/.temp/
 supabase/.branches/
 .env
 dist-web/
+
+# Generados por el workflow de despliegue web (Cloudflare Workers)
+wrangler.jsonc
+worker.js
