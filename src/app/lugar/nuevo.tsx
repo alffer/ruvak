@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { EMPTY_PLACE_FORM, formToInput, PlaceFields, type PlaceFormValue } from '@/components/PlaceForm';
 import { Badge, Button, Card, Chip, Field, H2, InlineNotice, P, Row, Screen, Segmented, ToggleRow } from '@/components/ui';
@@ -12,6 +12,28 @@ import { SOURCE_TYPE_LABELS } from '@/lib/types';
 import { OSM_ATTRIBUTION, suggestFromOsm } from '@/lib/osm';
 import { parseSharedUrl, type ParsedUrl } from '@/lib/urlParse';
 import { useLoad } from '@/lib/useLoad';
+
+interface OsmView {
+  status: 'idle' | 'loading' | 'done';
+  date: string;
+  foundAddress: boolean;
+  foundCategory: boolean;
+  appliedAddress: string | null;
+  appliedCategoryId: number | null;
+  keptAddress: boolean;
+  keptCategory: boolean;
+}
+
+const IDLE_OSM: OsmView = {
+  status: 'idle',
+  date: '',
+  foundAddress: false,
+  foundCategory: false,
+  appliedAddress: null,
+  appliedCategoryId: null,
+  keptAddress: false,
+  keptCategory: false,
+};
 
 /** Añadir lugar: pegar una URL (TikTok, Instagram, Google Maps, web…) o alta manual. RF-03. */
 export default function NewPlace() {
@@ -28,15 +50,16 @@ export default function NewPlace() {
   const [error, setError] = useState<string | null>(null);
   const [dups, setDups] = useState<DuplicateMatch[] | null>(null);
   const [busy, setBusy] = useState(false);
-  // Sugerencias de OpenStreetMap a partir de las coordenadas del enlace. `date` = cuándo se consultó.
-  const [osm, setOsm] = useState<{ status: 'idle' | 'loading' | 'done'; address: string | null; categorySlug: string | null; date: string }>({
-    status: 'idle',
-    address: null,
-    categorySlug: null,
-    date: '',
-  });
+  // Sugerencias de OpenStreetMap a partir de las coordenadas del enlace. Guarda lo que de verdad se aplicó al formulario,
+  // para que el aviso no afirme nada que no ha pasado.
+  const [osm, setOsm] = useState<OsmView>(IDLE_OSM);
   // Solo cuenta la última consulta: si se pega otro enlace mientras tanto, la respuesta anterior se descarta.
   const osmRequest = useRef(0);
+  // Copia del formulario para decidir qué rellenar sin depender de una lectura antigua.
+  const formRef = useRef(form);
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
 
   function readUrl() {
     const p = parseSharedUrl(url);
@@ -47,28 +70,57 @@ export default function NewPlace() {
     setForm((f) => ({ ...f, name: f.name || p.name || '', coords: f.coords || (p.lat != null ? `${p.lat}, ${p.lng}` : '') }));
     const req = ++osmRequest.current;
     if (p.lat == null || p.lng == null) {
-      setOsm({ status: 'idle', address: null, categorySlug: null, date: '' });
+      setOsm(IDLE_OSM);
       return;
     }
-    setOsm({ status: 'loading', address: null, categorySlug: null, date: '' });
-    suggestFromOsm(p.lat, p.lng, p.name).then(async (s) => {
-      if (req !== osmRequest.current) return;
-      const categoryId = s.categorySlug ? ((await getCategories()).find((c) => c.slug === s.categorySlug)?.id ?? null) : null;
-      if (req !== osmRequest.current) return;
-      // Dirección y categoría solo se rellenan si están vacías: lo que ya elegiste no se pisa.
-      setForm((f) => ({ ...f, address: f.address || s.address || '', categoryId: f.categoryId ?? categoryId }));
-      setOsm({ status: 'done', address: s.address, categorySlug: s.categorySlug, date: new Date().toISOString() });
-    });
+    setOsm({ ...IDLE_OSM, status: 'loading' });
+    suggestFromOsm(p.lat, p.lng, p.name)
+      .then(async (s) => {
+        const categoryId = s.categorySlug ? ((await getCategories()).find((c) => c.slug === s.categorySlug)?.id ?? null) : null;
+        if (req !== osmRequest.current) return;
+        const cur = formRef.current;
+        const applyAddress = !cur.address.trim() && !!s.address;
+        const applyCategory = cur.categoryId == null && categoryId != null;
+        setForm((f) => ({
+          ...f,
+          address: f.address.trim() ? f.address : (s.address ?? ''),
+          categoryId: f.categoryId ?? categoryId,
+        }));
+        setOsm({
+          status: 'done',
+          date: new Date().toISOString(),
+          foundAddress: !!s.address,
+          foundCategory: categoryId != null,
+          appliedAddress: applyAddress ? s.address : null,
+          appliedCategoryId: applyCategory ? categoryId : null,
+          keptAddress: cur.address.trim().length > 0 && !!s.address,
+          keptCategory: cur.categoryId != null && categoryId != null,
+        });
+      })
+      .catch(() => {
+        // Sin conexión o con error: se trata como «no encontrado», sin mensaje técnico ni aviso colgado.
+        if (req !== osmRequest.current) return;
+        setOsm({ ...IDLE_OSM, status: 'done', date: new Date().toISOString() });
+      });
   }
 
-  /** Texto del aviso: qué se ha sugerido, de dónde y cuándo; y qué no se ha encontrado. */
+  /** Aviso: qué se ha rellenado, qué ya estaba escrito, qué no se ha encontrado, de dónde y cuándo. */
   function osmMessage(): string {
-    const found = [osm.address ? 'la dirección' : null, osm.categorySlug ? 'la categoría' : null].filter(Boolean) as string[];
-    const missing = [osm.address ? null : 'la dirección', osm.categorySlug ? null : 'la categoría'].filter(Boolean) as string[];
+    const date = formatDate(osm.date);
+    const applied = [osm.appliedAddress ? 'la dirección' : null, osm.appliedCategoryId != null ? 'la categoría' : null].filter(Boolean) as string[];
+    const kept = [osm.keptAddress ? 'la dirección' : null, osm.keptCategory ? 'la categoría' : null].filter(Boolean) as string[];
+    const missing = [osm.foundAddress ? null : 'la dirección', osm.foundCategory ? null : 'la categoría'].filter(Boolean) as string[];
+    const hasData = osm.foundAddress || osm.foundCategory;
+    if (!hasData) return `No encontramos dirección ni categoría para este punto en OpenStreetMap (consulta del ${date}). Complétalas tú.`;
     const parts: string[] = [];
-    if (found.length) parts.push(`Sugerido por OpenStreetMap (${formatDate(osm.date)}): ${found.join(' y ')}. Compruébalo antes de guardar.`);
+    if (applied.length)
+      parts.push(
+        `Propuesta de OpenStreetMap (mapa abierto que editan voluntarios), consultada el ${date}: hemos rellenado ${applied.join(' y ')}. Sin verificar: compruébalo antes de guardar.`,
+      );
+    if (kept.length) parts.push(`Ya habías escrito ${kept.join(' y ')}; lo hemos dejado.`);
     if (missing.length) parts.push(`No encontramos ${missing.join(' ni ')} en OpenStreetMap: complétalo tú.`);
-    return `${parts.join(' ')} ${OSM_ATTRIBUTION}.`;
+    parts.push(`Datos: ${OSM_ATTRIBUTION}.`);
+    return parts.join(' ');
   }
 
   const source: SourceInput | undefined = parsed
@@ -158,12 +210,15 @@ export default function NewPlace() {
               Completa el nombre y la categoría de lo que viste.
             </P>
           ) : null}
-          {osm.status === 'loading' ? (
-            <P muted style={{ fontSize: 14 }}>
-              Buscando dirección y categoría en OpenStreetMap…
-            </P>
-          ) : null}
-          {osm.status === 'done' ? <InlineNotice tone="info">{osmMessage()}</InlineNotice> : null}
+          {/* Región «en vivo» presente desde el inicio: así los lectores de pantalla anuncian el cambio de texto. */}
+          <View accessibilityLiveRegion="polite">
+            {osm.status === 'loading' ? (
+              <P muted style={{ fontSize: 14 }}>
+                Buscando dirección y categoría en OpenStreetMap…
+              </P>
+            ) : null}
+            {osm.status === 'done' ? <InlineNotice tone="info">{osmMessage()}</InlineNotice> : null}
+          </View>
         </Card>
       ) : null}
 
@@ -171,7 +226,12 @@ export default function NewPlace() {
         <>
           <Card>
             <H2>El lugar</H2>
-            <PlaceFields value={form} onChange={(v) => (setForm(v), setDups(null))} showDescription={editorial} />
+            <PlaceFields
+              value={form}
+              onChange={(v) => (setForm(v), setDups(null))}
+              showDescription={editorial}
+              suggested={{ address: osm.appliedAddress, categoryId: osm.appliedCategoryId }}
+            />
           </Card>
           <Card>
             <H2>Para ti</H2>
