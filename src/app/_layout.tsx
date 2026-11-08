@@ -88,7 +88,6 @@ function Navigation() {
         <Stack.Screen name="importar" options={{ title: 'Importar de Google' }} />
         <Stack.Screen name="agenda" options={{ title: 'Agenda' }} />
         <Stack.Screen name="viajes" options={{ title: 'Viajes' }} />
-        <Stack.Screen name="admin/index" options={{ title: 'Editorial' }} />
         <Stack.Screen name="admin/contenido" options={{ title: 'Contenido editorial' }} />
       </Stack.Protected>
       {/* Llega desde el correo de recuperación (con la sesión temporal que crea Supabase). */}

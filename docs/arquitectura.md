@@ -14,10 +14,10 @@
 ```
 src/app/                pantallas (rutas)
   _layout.tsx           fuentes, SessionProvider y rutas protegidas (Stack.Protected)
-  (tabs)/               index (Inicio), descubrir, mapa, lugares, perfil
+  (tabs)/               index (Inicio), descubrir, mapa, lugares, revisar (solo admin), perfil
   lugar/                [id] (ficha), nuevo, editar/[id]
   lista/[id].tsx        lista sugerida o propia
-  admin/                panel editorial
+  admin/                contenido editorial (alta y edición); la revisión de novedades está en la pestaña «Revisar»
 src/components/         ui (Button, Chip, Field, Card, Badge, Segmented, ToggleRow, InlineNotice, ErrorState…),
                         Icon, Place (tarjetas y etiquetas), PlaceForm, CitySwitcher, Ruvak (ilustraciones de la mascota),
                         SetupNeeded, map/ (MapCanvas web y móvil)

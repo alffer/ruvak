@@ -1,22 +1,31 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
 import { KindBadge, VerificationBadge } from '@/components/Place';
-import { Badge, Button, Card, ErrorState, H2, InlineNotice, P, Row, Screen, SkeletonList } from '@/components/ui';
+import { Badge, Button, Card, ErrorState, H1, H2, InlineNotice, P, Row, Screen, SkeletonList } from '@/components/ui';
 import { confirmDiscoveryOpened, deleteDiscovery, getDiscovery, getEditorialPlaces, setDiscoveryPublished } from '@/lib/data';
 import { formatDate } from '@/lib/format';
+import { setPendingCount } from '@/lib/pendientes';
 import { useSession } from '@/lib/session';
 import { colors, space, typography } from '@/lib/tokens';
 import { useLoad } from '@/lib/useLoad';
 
-/** Panel editorial mínimo (RF-14). La seguridad real está en RLS: un no-admin no puede escribir. */
-export default function Admin() {
+/**
+ * Pestaña «Revisar» (solo administradoras): novedades que trae el proceso diario, pendientes de decisión.
+ * Nada llega publicado sin pasar por aquí. La seguridad real está en RLS: un no-admin no puede escribir.
+ */
+export default function Revisar() {
   const { profile, activeCity } = useSession();
   const items = useLoad(() => (activeCity ? getDiscovery(activeCity.id, { includeDrafts: true, includeHidden: true }) : Promise.resolve([])), [activeCity?.id]);
   const places = useLoad(getEditorialPlaces, []);
   const [busy, setBusy] = useState<number | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const drafts = (items.data ?? []).filter((i) => !i.published && i.sourceUrl);
+
+  // La insignia de la pestaña se actualiza con cada carga (publicar o descartar la recalcula).
+  useEffect(() => {
+    if (items.data) setPendingCount(items.data.filter((i) => !i.published && i.sourceUrl).length);
+  }, [items.data]);
 
   async function act(id: number, fn: () => Promise<void>, ok: string) {
     setBusy(id);
@@ -41,6 +50,7 @@ export default function Admin() {
 
   return (
     <Screen>
+      <H1>Revisar</H1>
       <Row gap={space[2]} wrap>
         <Button title="Nuevo contenido" icon="plus" onPress={() => router.push('/admin/contenido')} />
         <Button title="Nueva ficha editorial" icon="pin" variant="secondary" onPress={() => router.push('/lugar/nuevo')} />

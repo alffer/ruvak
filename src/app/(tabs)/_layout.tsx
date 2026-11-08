@@ -1,11 +1,15 @@
 import { router } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
+import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CitySwitcher } from '@/components/CitySwitcher';
 import { Icon, IconButton, type IconName } from '@/components/Icon';
 import { RuvakWordmark } from '@/components/Ruvak';
-import { colors, currentScheme, layout, space, states, themed, typography } from '@/lib/tokens';
+import { getDiscovery } from '@/lib/data';
+import { setPendingCount, usePendingCount } from '@/lib/pendientes';
+import { useSession } from '@/lib/session';
+import { colors, currentScheme, fonts, layout, space, states, themed, typography } from '@/lib/tokens';
 
 /**
  * Navegación principal (lámina «Navegación inferior»): Inicio, Explorar, «+» (añadir lugar), Guardados y Mapa.
@@ -46,6 +50,21 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const wide = width >= layout.sidebarBreakpoint;
+  const { profile, activeCity } = useSession();
+  const isAdmin = profile?.role === 'admin';
+  const cityId = activeCity?.id;
+  const pending = usePendingCount();
+
+  // Insignia de «Revisar»: cuenta los borradores de la ciudad activa. Sin sesión de administración no hay pendientes.
+  useEffect(() => {
+    if (!isAdmin || cityId == null) {
+      setPendingCount(0);
+      return;
+    }
+    getDiscovery(cityId, { includeDrafts: true, includeHidden: true })
+      .then((list) => setPendingCount(list.filter((i) => !i.published && i.sourceUrl).length))
+      .catch(() => setPendingCount(0));
+  }, [isAdmin, cityId]);
   const tab = (t: (typeof TABS)[number]) => (
     <Tabs.Screen
       key={t.name}
@@ -98,6 +117,23 @@ export default function TabsLayout() {
       <Tabs.Screen name="nuevo" options={{ title: 'Añadir lugar', tabBarButton: () => <AddButton wide={wide} /> }} />
       {tab(TABS[2])}
       {tab(TABS[3])}
+      <Tabs.Screen
+        name="revisar"
+        options={{
+          title: 'Revisar',
+          // Solo administradoras: para el resto la pestaña no ocupa hueco. Icono, texto y número siempre.
+          ...(isAdmin ? {} : { tabBarItemStyle: { display: 'none' as const } }),
+          tabBarAccessibilityLabel: pending ? `Revisar, ${pending} pendientes` : 'Revisar',
+          tabBarBadge: pending > 0 ? pending : undefined,
+          tabBarBadgeStyle: { backgroundColor: colors.newsFill, color: colors.onNews, fontFamily: fonts.bodyMedium },
+          tabBarLabel: ({ color }) => (
+            <Text numberOfLines={1} style={[labelStyle, { color: String(color) }, wide && { fontSize: 15, textAlign: 'left', marginLeft: 12 }]}>
+              Revisar
+            </Text>
+          ),
+          tabBarIcon: ({ color }) => <Icon name="pending" color={String(color)} size={22} />,
+        }}
+      />
       <Tabs.Screen
         name="perfil"
         options={{
