@@ -17,15 +17,38 @@ export const ratio = (a: string, b: string) => {
 type K = keyof typeof colors;
 // [texto, fondo]: todas las combinaciones de texto que usa la app.
 const TEXT: [K, K][] = [
-  ['text', 'bg'], ['text', 'card'], ['text', 'raised'], ['text', 'surface0'],
-  ['textSecondary', 'bg'], ['textSecondary', 'card'], ['textSecondary', 'raised'], ['textSecondary', 'surface0'],
-  ['accentText', 'bg'], ['accentText', 'card'], ['accentText', 'raised'], ['accentText', 'surface0'],
-  ['newsText', 'bg'], ['newsText', 'card'], ['newsText', 'raised'], ['newsText', 'surface0'],
-  ['danger', 'bg'], ['danger', 'card'], ['danger', 'raised'], ['success', 'bg'], ['success', 'card'],
-  ['onPrimary', 'primary'], ['onNews', 'newsFill'], ['onSolid', 'solid'],
-  ['onPaper', 'paper'], ['onPaperSecondary', 'paper'],
+  ['text', 'bg'],
+  ['text', 'card'],
+  ['text', 'raised'],
+  ['text', 'surface0'],
+  ['textSecondary', 'bg'],
+  ['textSecondary', 'card'],
+  ['textSecondary', 'raised'],
+  ['textSecondary', 'surface0'],
+  ['accentText', 'bg'],
+  ['accentText', 'card'],
+  ['accentText', 'raised'],
+  ['accentText', 'surface0'],
+  ['newsText', 'bg'],
+  ['newsText', 'card'],
+  ['newsText', 'raised'],
+  ['newsText', 'surface0'],
+  ['danger', 'bg'],
+  ['danger', 'card'],
+  ['danger', 'raised'],
+  ['success', 'bg'],
+  ['success', 'card'],
+  ['onPrimary', 'primary'],
+  ['onNews', 'newsFill'],
+  ['onSolid', 'solid'],
+  ['onPaper', 'paper'],
+  ['onPaperSecondary', 'paper'],
 ];
-const UI: [K, K][] = [['outline', 'bg'], ['outline', 'card'], ['outline', 'raised']];
+const UI: [K, K][] = [
+  ['outline', 'bg'],
+  ['outline', 'card'],
+  ['outline', 'raised'],
+];
 
 for (const scheme of ['dark', 'light'] as SchemeName[]) {
   applyScheme(scheme);
