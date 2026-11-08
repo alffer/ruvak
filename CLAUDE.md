@@ -13,6 +13,12 @@ documentación al día en el mismo commit que cualquier cambio de comportamiento
 - **Idioma**: la app y la documentación están en castellano; habla con la usuaria en castellano.
 - **Nada de `git push`, despliegues ni compilaciones sin aprobación expresa.** Se commitea en local y se pregunta.
 - **Marca**: colores, espaciado y tipografía solo desde `src/lib/tokens.ts`; nada de HEX sueltos. Hay dos temas (oscuro y claro): los estilos con color van en `themed(() => StyleSheet.create(...))`. Referencia: maquetas y lámina de la usuaria (ver `docs/diseno.md`).
+- **Revisión UX antes de presentar (norma de la usuaria)**: todo cambio visual lo revisa primero un agente
+  experto en UX (subagente) y se corrige antes de enseñárselo. Criterios: facilidad de comprensión,
+  usabilidad, eficiencia (pocos pasos y pocos botones por pantalla), jerarquía de la información, contraste
+  AAA (≥ 7:1 en texto), objetivos táctiles, estados vacíos/carga/error, móvil y escritorio, tema claro y
+  oscuro, y que no se presente nada inventado. Se pasan las capturas de `docs/capturas/` y se mide el
+  contraste con números. Se resume en la respuesta qué encontró y qué se cambió.
 - **Accesibilidad** (objetivo WCAG 2.2 AA, texto AAA donde se pueda): contraste medido en `tokens.ts`,
   objetivos táctiles de 48 px, etiquetas accesibles, foco visible y nunca un estado solo con color.
 - **Datos**: no se inventan horarios, aperturas, reseñas ni fotos. Todo dato variable lleva fuente y
