@@ -6,7 +6,7 @@ import { RuvakEmptyState, RuvakIllustration } from '@/components/Ruvak';
 import { Card, Chip, ChipRow, ErrorState, H1, InlineNotice, LinkButton, Row, Screen, SearchField, SkeletonList } from '@/components/ui';
 import { getDiscovery, getMyPlaces, hideDiscovery, savePlace, unhideAllDiscovery } from '@/lib/data';
 import { nameKey } from '@/lib/dedupe';
-import { rankDiscovery, reasonFor } from '@/lib/recommend';
+import { isVisibleEvent, rankDiscovery, reasonFor } from '@/lib/recommend';
 import { useCategoryName, useSession } from '@/lib/session';
 import { colors, space, typography } from '@/lib/tokens';
 import type { DiscoveryItem, DiscoveryKind } from '@/lib/types';
@@ -58,6 +58,7 @@ export default function Discover() {
   };
   const visible = ranked.filter(
     (i) =>
+      isVisibleEvent(i) &&
       (!kinds.length || kinds.includes(i.kind)) &&
       (categoryId == null || i.place?.categoryId === categoryId) &&
       matches(i, query, categoryName) &&

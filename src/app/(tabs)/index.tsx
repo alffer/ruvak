@@ -6,7 +6,7 @@ import { CategoryShortcut, PlaceListItem, RecommendedCard } from '@/components/P
 import { RuvakEmptyState, RuvakIllustration } from '@/components/Ruvak';
 import { ErrorState, P, Row, Screen, SearchField, SectionHeader, SkeletonList } from '@/components/ui';
 import { getDiscovery, getMyPlaces } from '@/lib/data';
-import { rankDiscovery } from '@/lib/recommend';
+import { isVisibleEvent, rankDiscovery } from '@/lib/recommend';
 import { useCategoryName, useSession } from '@/lib/session';
 import { colors, space, typography } from '@/lib/tokens';
 import { useLoad } from '@/lib/useLoad';
@@ -40,7 +40,7 @@ export default function Home() {
     categoryName,
     saved: all,
   })
-    .filter((i) => UPCOMING.includes(i.kind))
+    .filter((i) => UPCOMING.includes(i.kind) && isVisibleEvent(i))
     .slice(0, 8);
   const city = activeCity?.name ?? 'tu ciudad';
 

@@ -49,6 +49,8 @@ export default function EditContent() {
         sourceName: it.sourceName,
         sourceUrl: it.sourceUrl,
         verifiedAt: it.verifiedAt,
+        startsOn: it.startsOn,
+        endsOn: it.endsOn,
         published: it.published,
       }
     : {
@@ -163,6 +165,22 @@ function ContentForm({ itemId, initial }: { itemId: number | null; initial: Disc
           autoCapitalize="none"
           keyboardType="url"
         />
+        {d.kind === 'plan' ? (
+          <>
+            <Field
+              label="Empieza"
+              hint="AAAA-MM-DD. Un evento sin fecha de fin no se muestra."
+              value={d.startsOn ?? ''}
+              onChangeText={(startsOn) => set({ startsOn })}
+            />
+            <Field
+              label="Termina"
+              hint="AAAA-MM-DD. Cuando pasa, el evento desaparece solo."
+              value={d.endsOn ?? ''}
+              onChangeText={(endsOn) => set({ endsOn })}
+            />
+          </>
+        ) : null}
         <Field label="Fecha de revisión" hint="AAAA-MM-DD" value={d.verifiedAt ?? ''} onChangeText={(verifiedAt) => set({ verifiedAt })} />
         <Field
           label="Foto (URL)"

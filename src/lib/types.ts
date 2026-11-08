@@ -108,6 +108,9 @@ export interface DiscoveryItem {
   sourceName: string | null;
   sourceUrl: string | null;
   verifiedAt: string | null;
+  /** Fechas de un evento temporal (exposición, concierto…). Un plan sin fecha de fin no se muestra. */
+  startsOn: string | null;
+  endsOn: string | null;
   published: boolean;
   createdAt: string;
   updatedAt: string;

@@ -37,3 +37,10 @@ export function rankDiscovery(items: DiscoveryItem[], ctx: RecommendContext): Di
     .sort((a, b) => b.s - a.s || a.idx - b.idx)
     .map((x) => x.item);
 }
+
+/** Un plan (evento temporal) solo se muestra si tiene fecha y no ha terminado. Las aperturas siempre se muestran. */
+export function isVisibleEvent(item: DiscoveryItem, today = new Date().toISOString().slice(0, 10)): boolean {
+  if (item.kind !== 'plan') return true;
+  const end = item.endsOn ?? item.startsOn;
+  return !!end && end >= today;
+}

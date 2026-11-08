@@ -91,6 +91,8 @@ function mapDiscovery(r: any): DiscoveryItem {
     sourceName: r.source_name,
     sourceUrl: r.source_url,
     verifiedAt: r.verified_at,
+    startsOn: r.starts_on ?? null,
+    endsOn: r.ends_on ?? null,
     published: r.published,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -414,6 +416,8 @@ export interface DiscoveryInput {
   sourceName: string | null;
   sourceUrl: string | null;
   verifiedAt: string | null;
+  startsOn?: string | null;
+  endsOn?: string | null;
   published: boolean;
 }
 
@@ -431,6 +435,8 @@ export async function saveDiscovery(id: number | null, d: DiscoveryInput): Promi
     source_name: d.sourceName?.trim() || null,
     source_url: d.sourceUrl?.trim() || null,
     verified_at: d.verifiedAt || null,
+    starts_on: d.startsOn || null,
+    ends_on: d.endsOn || null,
     published: d.published,
   };
   if (id) {
