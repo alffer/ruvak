@@ -1,8 +1,9 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
+import * as ImagePicker from 'expo-image-picker';
 import { Text, View } from 'react-native';
 import { Button, Card, Chip, confirmAction, Field, H2, InlineNotice, Loading, P, Row, Screen, ToggleRow } from '@/components/ui';
-import { deleteDiscovery, getDiscovery, getEditorialPlaces, saveDiscovery, type DiscoveryInput } from '@/lib/data';
+import { deleteDiscovery, getDiscovery, getEditorialPlaces, saveDiscovery, uploadDiscoveryImage, type DiscoveryInput } from '@/lib/data';
 import { nameKey } from '@/lib/dedupe';
 import { useSession } from '@/lib/session';
 import { colors, space, typography } from '@/lib/tokens';
@@ -182,6 +183,24 @@ function ContentForm({ itemId, initial }: { itemId: number | null; initial: Disc
           </>
         ) : null}
         <Field label="Fecha de revisión" hint="AAAA-MM-DD" value={d.verifiedAt ?? ''} onChangeText={(verifiedAt) => set({ verifiedAt })} />
+        <Row gap={space[2]} wrap>
+          <Button
+            title="Subir foto"
+            icon="upload"
+            variant="secondary"
+            onPress={async () => {
+              const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.85 });
+              if (res.canceled || !res.assets[0]) return;
+              try {
+                const url = await uploadDiscoveryImage(res.assets[0].uri, res.assets[0].mimeType);
+                set({ imageUrl: url });
+              } catch (e) {
+                setError((e as Error).message);
+              }
+            }}
+          />
+          {d.imageUrl ? <Button title="Quitar foto" variant="ghost" onPress={() => set({ imageUrl: null, imageCredit: null })} /> : null}
+        </Row>
         <Field
           label="Foto (URL)"
           optional

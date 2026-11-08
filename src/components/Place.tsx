@@ -1,5 +1,6 @@
 // Tarjetas y etiquetas de lugares y de contenido editorial.
 import { router } from 'expo-router';
+import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { formatDate, hostOf, openExternal } from '@/lib/format';
 import { brand, colors, iconSize, radii, space, states, themed, touchTarget, typography } from '@/lib/tokens';
@@ -86,6 +87,22 @@ export function DiscoveryCard({
 }) {
   return (
     <Card style={{ padding: 0, overflow: 'hidden', gap: 0 }}>
+      {item.imageUrl ? (
+        <View>
+          <Image
+            source={{ uri: item.imageUrl }}
+            style={{ width: '100%', aspectRatio: 16 / 9, backgroundColor: colors.surface0 }}
+            contentFit="cover"
+            accessibilityLabel={item.title}
+            transition={0}
+          />
+          {item.imageCredit ? (
+            <Text style={[typography.caption, { color: colors.textSecondary, paddingHorizontal: space[4], paddingTop: space[1] }]}>
+              Foto: {item.imageCredit}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
       {/* Sin foto autorizada no se inventa una: bloque tipográfico. */}
       <View style={styles.cover}>
         <Text style={[typography.overline, { color: colors.textSecondary }]}>{item.place?.zone ?? 'Gijón'}</Text>
@@ -221,10 +238,19 @@ export function RecommendedCard({ item, categoryName, onPress }: { item: Discove
       accessibilityLabel={[item.title, categoryName, where, VERIFICATION_LABELS[item.verification]].filter(Boolean).join('. ')}
       style={({ pressed }) => [recCard.card, { opacity: pressed ? states.pressedOpacity : 1 }]}
     >
-      <View style={recCard.cover}>
-        <Text style={[typography.overline, { color: brand.cream }]}>{categoryName ?? 'Gijón'}</Text>
-        <View style={recCard.stripe} />
-      </View>
+      {item.imageUrl ? (
+        <View>
+          <Image source={{ uri: item.imageUrl }} style={recCard.photo} contentFit="cover" accessibilityLabel={item.title} transition={0} />
+          {item.imageCredit ? (
+            <Text style={[typography.caption, { color: colors.onPaperSecondary, paddingHorizontal: space[3], paddingTop: 2 }]}>Foto: {item.imageCredit}</Text>
+          ) : null}
+        </View>
+      ) : (
+        <View style={recCard.cover}>
+          <Text style={[typography.overline, { color: brand.cream }]}>{categoryName ?? 'Gijón'}</Text>
+          <View style={recCard.stripe} />
+        </View>
+      )}
       <View style={{ padding: space[3], gap: space[1] }}>
         <Text style={[typography.cardTitle, { color: colors.onPaper }]} numberOfLines={2}>
           {item.title}
@@ -269,5 +295,6 @@ const recCard = themed(() =>
     card: { width: 232, borderRadius: radii.lg, overflow: 'hidden', backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.border },
     cover: { height: 72, padding: space[3], justifyContent: 'space-between', backgroundColor: brand.ink },
     stripe: { height: 4, width: 48, borderRadius: 2, backgroundColor: brand.lime },
+    photo: { width: '100%', height: 92, backgroundColor: brand.ink },
   }),
 );

@@ -459,6 +459,16 @@ export async function confirmDiscoveryOpened(id: number) {
   check(await supabase.from('discovery_items').update({ kind: 'just_opened', verification: 'confirmed', verified_at: today, published: true }).eq('id', id));
 }
 
+/** Sube una foto de una novedad al bucket público y devuelve su URL. Solo administradores (RLS). */
+export async function uploadDiscoveryImage(localUri: string, mimeType: string | null | undefined): Promise<string> {
+  const me = await uid();
+  const blob = await (await fetch(localUri)).blob();
+  const ext = (mimeType ?? 'image/jpeg').split('/')[1]?.replace('jpeg', 'jpg') ?? 'jpg';
+  const path = `${me}/${Date.now()}.${ext}`;
+  check(await supabase.storage.from('discovery-images').upload(path, blob, { contentType: mimeType ?? 'image/jpeg', upsert: false }));
+  return supabase.storage.from('discovery-images').getPublicUrl(path).data.publicUrl;
+}
+
 /** Publica o retira un contenido. Solo lo usa el panel editorial (RLS lo limita a administradores). */
 export async function setDiscoveryPublished(id: number, published: boolean) {
   check(await supabase.from('discovery_items').update({ published }).eq('id', id));
