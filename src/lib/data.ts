@@ -233,6 +233,8 @@ export interface SourceInput {
   normalizedUrl?: string | null;
   externalId?: string | null;
   label?: string | null;
+  /** Cuándo se comprobó el dato de esta fuente (ISO). Sin valor, solo las editoriales llevan fecha. */
+  checkedAt?: string | null;
 }
 
 function placeRow(p: PlaceInput) {
@@ -295,7 +297,7 @@ export async function addSource(placeId: number, s: SourceInput, editorial = fal
       normalized_url: s.normalizedUrl ?? null,
       external_id: s.externalId ?? null,
       label: s.label ?? null,
-      checked_at: editorial ? new Date().toISOString() : null,
+      checked_at: s.checkedAt ?? (editorial ? new Date().toISOString() : null),
     }),
   );
 }

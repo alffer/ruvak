@@ -1,7 +1,7 @@
 /// <reference types="node" />
 // Comprobación de src/lib/osm.ts (lógica pura, sin red). Ejecutar: npx tsx scripts/check-osm.ts
 import assert from 'node:assert/strict';
-import { categorySlugFromTags, formatAddress, normalizeName, pickNamedPoi } from '../src/lib/osm';
+import { categorySlugFromTags, formatAddress, normalizeName, osmSource, pickNamedPoi } from '../src/lib/osm';
 
 // ---- Nombres: sin acentos, mayúsculas ni signos
 assert.equal(normalizeName('Café «La Estación»'), 'cafe la estacion');
@@ -36,5 +36,11 @@ assert.equal(pickNamedPoi(pois, 'Estación')?.amenity ?? null, null, 'un nombre 
 assert.equal(pickNamedPoi(pois, 'Pepe'), null, 'coincidencia parcial no vale');
 assert.equal(pickNamedPoi(pois, ''), null);
 assert.equal(pickNamedPoi([], 'Bar Pepe'), null);
+
+// ---- Fuente registrada: enlace al mapa, nombre y fecha de la consulta
+const src = osmSource(43.5446, -5.6626, '2026-11-08T10:00:00.000Z');
+assert.equal(src.sourceType, 'other');
+assert.equal(src.checkedAt, '2026-11-08T10:00:00.000Z');
+assert.match(src.url ?? '', /^https:\/\/www\.openstreetmap\.org\//);
 
 console.log('check-osm: OK');

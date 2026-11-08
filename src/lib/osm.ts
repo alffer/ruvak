@@ -2,6 +2,8 @@
 // Solo se usan coordenadas y nombre que ya vienen en el enlace. Nada se inventa: si no hay coincidencia, no se sugiere nada.
 // Licencia de los datos: ODbL («© OpenStreetMap contributors»). Comprobación de la lógica pura: scripts/check-osm.ts.
 
+import type { SourceInput } from './data';
+
 export const OSM_ATTRIBUTION = '© OpenStreetMap contributors';
 
 export interface OsmSuggestion {
@@ -90,4 +92,15 @@ export async function suggestFromOsm(lat: number, lng: number, name: string | nu
   const tags = name && over?.elements ? pickNamedPoi(over.elements, name) : null;
   const categorySlug = tags ? categorySlugFromTags(tags) : null;
   return { address, categorySlug };
+}
+
+/** Fuente que se registra con el lugar cuando OpenStreetMap ha rellenado algo: enlace al mapa y fecha de la consulta. */
+export function osmSource(lat: number, lng: number, checkedAt: string): SourceInput {
+  return {
+    sourceType: 'other',
+    url: `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=18/${lat}/${lng}`,
+    normalizedUrl: `openstreetmap.org/?mlat=${lat}&mlon=${lng}`,
+    label: 'OpenStreetMap · dirección y categoría',
+    checkedAt,
+  };
 }

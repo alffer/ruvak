@@ -9,7 +9,7 @@ import { formatDate, hostOf } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { colors, space } from '@/lib/tokens';
 import { SOURCE_TYPE_LABELS } from '@/lib/types';
-import { OSM_ATTRIBUTION, suggestFromOsm } from '@/lib/osm';
+import { OSM_ATTRIBUTION, osmSource, suggestFromOsm } from '@/lib/osm';
 import { parseSharedUrl, type ParsedUrl } from '@/lib/urlParse';
 import { useLoad } from '@/lib/useLoad';
 
@@ -145,6 +145,17 @@ export default function NewPlace() {
         }
       }
       const id = await createPlace(input, { source, note, collectionIds: listIds, editorial: editorial && profile?.role === 'admin' });
+      // Si OpenStreetMap ha rellenado dirección o categoría, su procedencia y su fecha quedan registradas.
+      const osmFilled = osm.status === 'done' && (osm.appliedAddress || osm.appliedCategoryId != null);
+      if (osmFilled && parsed?.lat != null && parsed?.lng != null) {
+        try {
+          await addSource(id, osmSource(parsed.lat, parsed.lng, osm.date));
+        } catch {
+          setError('El lugar se guardó, pero no se pudo registrar la fuente de OpenStreetMap. Puedes añadirla desde la ficha.');
+          setBusy(false);
+          return;
+        }
+      }
       bump();
       router.replace(`/lugar/${id}`);
     } catch (e) {
