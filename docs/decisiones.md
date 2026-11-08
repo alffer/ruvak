@@ -17,3 +17,4 @@
 | 2026-11-08 | Valoraciones, horarios, precio, wifi y fotos de las maquetas solo con datos reales | Criterio 19: nada inventado presentado como real |
 | 2026-11-08 | Texto de etiquetas naranjas en tinta, no blanco | Blanco sobre naranja da 2,8:1 |
 | 2026-11-07 | Mascota con las ilustraciones de la usuaria (WebP con alfa) e iconos generados desde la cabeza del gato | Identidad real; los originales se conservan intactos y los derivados se regeneran con `prepare-ruvak.mjs` |
+| 2026-11-08 | Reparto tipográfico de la usuaria: Space Grotesk 600/500, Inter 400/500; wordmark propio | Pesos concretos por uso; el wordmark se compone provisionalmente hasta tener el archivo |

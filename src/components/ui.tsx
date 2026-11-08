@@ -394,7 +394,7 @@ export function Badge({ label, tone = 'neutral', icon }: { label: string; tone?:
   return (
     <View style={[styles.badge, { backgroundColor: t.bg, borderColor: t.border }]}>
       {icon ? <Icon name={icon} size={14} color={t.fg} /> : null}
-      <Text style={[typography.caption, { color: t.fg, fontFamily: fonts.bodySemibold }]}>{label}</Text>
+      <Text style={[typography.caption, { color: t.fg, fontFamily: fonts.bodyMedium }]}>{label}</Text>
     </View>
   );
 }
@@ -469,7 +469,7 @@ const styles = themed(() =>
       borderWidth: 1,
     },
     buttonRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2] },
-    buttonText: { fontFamily: fonts.bodySemibold, fontSize: 16 },
+    buttonText: { fontFamily: fonts.bodyMedium, fontSize: 16 },
     chip: {
       minHeight: 40,
       flexDirection: 'row',

@@ -1,14 +1,14 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { DiscoveryCard } from '@/components/Place';
 import { RuvakEmptyState, RuvakIllustration } from '@/components/Ruvak';
-import { Chip, ChipRow, ErrorState, H1, InlineNotice, LinkButton, P, Row, Screen, SearchField, SkeletonList } from '@/components/ui';
+import { Chip, ChipRow, ErrorState, H1, InlineNotice, LinkButton, Row, Screen, SearchField, SkeletonList } from '@/components/ui';
 import { getDiscovery, getMyPlaces, hideDiscovery, savePlace, unhideAllDiscovery } from '@/lib/data';
 import { nameKey } from '@/lib/dedupe';
 import { rankDiscovery, reasonFor } from '@/lib/recommend';
 import { useCategoryName, useSession } from '@/lib/session';
-import { space } from '@/lib/tokens';
+import { colors, space, typography } from '@/lib/tokens';
 import type { DiscoveryItem, DiscoveryKind } from '@/lib/types';
 import { useLoad } from '@/lib/useLoad';
 
@@ -74,7 +74,7 @@ export default function Discover() {
       <Row gap={space[3]} style={{ alignItems: 'flex-end' }}>
         <View style={{ flex: 1, gap: space[1] }}>
           <H1>Explorar</H1>
-          <P muted>He encontrado algunas pistas por {activeCity?.name ?? 'tu ciudad'}.</P>
+          <Text style={[typography.subtitle, { color: colors.textSecondary }]}>He encontrado algunas pistas por {activeCity?.name ?? 'tu ciudad'}.</Text>
         </View>
         <RuvakIllustration pose="gato-mirada" height={96} />
       </Row>

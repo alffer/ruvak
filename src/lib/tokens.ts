@@ -135,14 +135,18 @@ export const radii = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, pill: 999 } as cons
 
 export const borders = { hairline: 1, control: 1, selected: 2 } as const;
 
-/** Familias cargadas en src/app/_layout.tsx con expo-font (lámina: Space Grotesk + Inter). */
+/**
+ * Reparto tipográfico (lámina): titulares Space Grotesk SemiBold 600; subtítulos Space Grotesk Medium 500;
+ * textos y descripciones Inter Regular 400; botones y navegación Inter Medium 500; datos y metadatos Inter Regular 400.
+ * El logotipo es un wordmark propio: mientras no haya el archivo se compone con Space Grotesk Bold (provisional).
+ * Familias cargadas en src/app/_layout.tsx con expo-font.
+ */
 export const fonts = {
-  heading: 'SpaceGrotesk_700Bold',
-  headingMedium: 'SpaceGrotesk_500Medium',
+  heading: 'SpaceGrotesk_600SemiBold',
+  subtitle: 'SpaceGrotesk_500Medium',
+  wordmark: 'SpaceGrotesk_700Bold',
   body: 'Inter_400Regular',
   bodyMedium: 'Inter_500Medium',
-  bodySemibold: 'Inter_600SemiBold',
-  bodyBold: 'Inter_700Bold',
 } as const;
 
 export const typography = {
@@ -151,12 +155,18 @@ export const typography = {
   title: { fontFamily: fonts.heading, fontSize: 28, lineHeight: 32, letterSpacing: -0.6 },
   section: { fontFamily: fonts.heading, fontSize: 20, lineHeight: 26, letterSpacing: -0.3 },
   cardTitle: { fontFamily: fonts.heading, fontSize: 17, lineHeight: 22, letterSpacing: -0.2 },
+  /** Subtítulos (bajo un titular). */
+  subtitle: { fontFamily: fonts.subtitle, fontSize: 17, lineHeight: 24 },
+  /** Textos y descripciones. */
   body: { fontFamily: fonts.body, fontSize: 16, lineHeight: 24 },
-  bodyStrong: { fontFamily: fonts.bodySemibold, fontSize: 16, lineHeight: 24 },
-  label: { fontFamily: fonts.bodySemibold, fontSize: 14, lineHeight: 20 },
-  caption: { fontFamily: fonts.bodyMedium, fontSize: 13, lineHeight: 18 },
+  /** Texto con énfasis (nombres dentro de un párrafo, filas destacadas). */
+  bodyStrong: { fontFamily: fonts.bodyMedium, fontSize: 16, lineHeight: 24 },
+  /** Botones, filtros y navegación. */
+  label: { fontFamily: fonts.bodyMedium, fontSize: 14, lineHeight: 20 },
+  /** Datos y metadatos. */
+  caption: { fontFamily: fonts.body, fontSize: 13, lineHeight: 18 },
   /** Mayúsculas espaciadas: solo etiquetas breves. */
-  overline: { fontFamily: fonts.bodyBold, fontSize: 12, lineHeight: 16, letterSpacing: 1.2, textTransform: 'uppercase' as const },
+  overline: { fontFamily: fonts.bodyMedium, fontSize: 12, lineHeight: 16, letterSpacing: 1.2, textTransform: 'uppercase' as const },
 } as const;
 
 export const iconSize = { sm: 16, md: 20, lg: 24 } as const;

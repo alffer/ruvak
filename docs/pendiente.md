@@ -7,6 +7,7 @@
   y añadir esos casos a `scripts/check-takeout.ts`.
 - **Verificar o retirar el contenido de ejemplo** de la semilla y cargar el contenido real de Gijón.
 - **Identidad**: faltan por llegar como archivo la portada (gato, grajo, luna y skyline), el gato dormido y de espaldas, el grajo posado, el skyline nocturno, la textura de hormigón, los trazos de pintura lima y los iconos de exploración.
+- **Wordmark propio** de `ruvak_` (hoy compuesto con Space Grotesk Bold, provisional).
 - **Maquetas pendientes de aplicar**: categorías con foto en Explorar, «Cerca de ti» con mapa, «Zonas para explorar», galería y bloque «Información» en la ficha, y el gato asomando en la ficha. Las fotos, valoraciones, horarios, precio, wifi y «pet friendly» necesitan datos reales (ver `diseno.md`).
 - **Probar en un proyecto de Supabase real**: registro con confirmación de correo, recuperar contraseña con
   *Redirect URLs*, y el mapa en móvil (WebView).

@@ -55,7 +55,7 @@ export function RuvakWordmark({ size = 28, withHead = false }: { size?: number; 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: size * 0.3 }} accessible accessibilityRole="header" accessibilityLabel="RUVAK">
       {withHead ? <RuvakAvatar size={size * 1.25} /> : null}
-      <Text aria-hidden style={{ fontFamily: fonts.heading, fontSize: size, lineHeight: size * 1.2, letterSpacing: -size * 0.04, color: colors.text }}>
+      <Text aria-hidden style={{ fontFamily: fonts.wordmark, fontSize: size, lineHeight: size * 1.2, letterSpacing: -size * 0.04, color: colors.text }}>
         ruvak<Text style={{ color: colors.mark }}>_</Text>
       </Text>
     </View>

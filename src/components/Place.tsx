@@ -2,7 +2,7 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { formatDate, hostOf, openExternal } from '@/lib/format';
-import { brand, fonts, colors, iconSize, radii, space, states, themed, touchTarget, typography } from '@/lib/tokens';
+import { brand, colors, iconSize, radii, space, states, themed, touchTarget, typography } from '@/lib/tokens';
 import {
   DISCOVERY_KIND_LABELS,
   VERIFICATION_LABELS,
@@ -238,7 +238,7 @@ export function RecommendedCard({ item, categoryName, onPress }: { item: Discove
         ) : null}
         <Row gap={space[1]}>
           <Icon name={item.verification === 'confirmed' ? 'check-circle' : 'alert'} size={iconSize.sm} color={colors.onPaperSecondary} />
-          <Text style={[typography.caption, { color: colors.onPaperSecondary, fontFamily: fonts.bodySemibold }]}>{VERIFICATION_LABELS[item.verification]}</Text>
+          <Text style={[typography.caption, { color: colors.onPaperSecondary }]}>{VERIFICATION_LABELS[item.verification]}</Text>
         </Row>
       </View>
     </Pressable>

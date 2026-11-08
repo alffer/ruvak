@@ -29,7 +29,18 @@ Contraste medido (WCAG 2.2): texto 15,5:1; secundario ≥ 6,9:1; lima sobre fond
 
 ## Tipografía
 
-Space Grotesk (títulos, marca) e Inter (interfaz), con licencia OFL, cargadas con `expo-font`. Mayúsculas espaciadas solo en etiquetas breves.
+Reparto de la usuaria (licencias OFL, cargadas con `expo-font`):
+
+| Uso | Tipografía | Peso | Token |
+| --- | ---------- | ---- | ----- |
+| Logotipo `ruvak_` | Wordmark propio | Propio | `fonts.wordmark` (provisional: Space Grotesk Bold hasta tener el archivo) |
+| Titulares | Space Grotesk | SemiBold 600 | `hero`, `display`, `title`, `section`, `cardTitle` |
+| Subtítulos | Space Grotesk | Medium 500 | `subtitle` |
+| Textos y descripciones | Inter | Regular 400 | `body` |
+| Botones y navegación | Inter | Medium 500 | `label` (y `bodyStrong` para énfasis) |
+| Datos y metadatos | Inter | Regular 400 | `caption` |
+
+Mayúsculas espaciadas (`overline`, Inter Medium) solo en etiquetas breves.
 
 ## Forma y componentes
 

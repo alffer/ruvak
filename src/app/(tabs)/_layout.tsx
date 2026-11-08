@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CitySwitcher } from '@/components/CitySwitcher';
 import { Icon, IconButton, type IconName } from '@/components/Icon';
 import { RuvakWordmark } from '@/components/Ruvak';
-import { colors, layout, space, states, themed, typography } from '@/lib/tokens';
+import { colors, fonts, layout, space, states, themed, typography } from '@/lib/tokens';
 
 /**
  * Navegación principal (lámina «Navegación inferior»): Inicio, Explorar, «+» (añadir lugar), Guardados y Mapa.
@@ -19,7 +19,8 @@ const TABS: { name: string; title: string; icon: IconName }[] = [
   { name: 'mapa', title: 'Mapa', icon: 'map' },
 ];
 
-const labelStyle = { ...typography.caption, lineHeight: 18, textAlign: 'center' as const };
+// Navegación: Inter Medium (lámina).
+const labelStyle = { ...typography.caption, fontFamily: fonts.bodyMedium, lineHeight: 18, textAlign: 'center' as const };
 
 function AddButton({ wide }: { wide: boolean }) {
   return (
