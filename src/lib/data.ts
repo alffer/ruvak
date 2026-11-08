@@ -447,6 +447,12 @@ export async function saveDiscovery(id: number | null, d: DiscoveryInput): Promi
   return r.id;
 }
 
+/** Confirma que una apertura anunciada ya está abierta: recién abierto, confirmado, revisado hoy y publicado. */
+export async function confirmDiscoveryOpened(id: number) {
+  const today = new Date().toISOString().slice(0, 10);
+  check(await supabase.from('discovery_items').update({ kind: 'just_opened', verification: 'confirmed', verified_at: today, published: true }).eq('id', id));
+}
+
 /** Publica o retira un contenido. Solo lo usa el panel editorial (RLS lo limita a administradores). */
 export async function setDiscoveryPublished(id: number, published: boolean) {
   check(await supabase.from('discovery_items').update({ published }).eq('id', id));

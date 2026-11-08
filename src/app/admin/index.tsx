@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Linking, Text, View } from 'react-native';
 import { KindBadge, VerificationBadge } from '@/components/Place';
 import { Badge, Button, Card, ErrorState, H2, InlineNotice, P, Row, Screen, SkeletonList } from '@/components/ui';
-import { deleteDiscovery, getDiscovery, getEditorialPlaces, setDiscoveryPublished } from '@/lib/data';
+import { confirmDiscoveryOpened, deleteDiscovery, getDiscovery, getEditorialPlaces, setDiscoveryPublished } from '@/lib/data';
 import { formatDate } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { colors, space, typography } from '@/lib/tokens';
@@ -68,6 +68,15 @@ export default function Admin() {
             ) : null}
             <P muted style={{ fontSize: 14 }}>{`Fuente: ${i.sourceName ?? 'sin indicar'}`}</P>
             <Row gap={space[2]} wrap>
+              {i.kind === 'upcoming_opening' || i.kind === 'announced' ? (
+                <Button
+                  title="Ya está abierto"
+                  icon="sparkles"
+                  variant="secondary"
+                  loading={busy === i.id}
+                  onPress={() => act(i.id, () => confirmDiscoveryOpened(i.id), `«${i.title}» confirmada como abierta.`)}
+                />
+              ) : null}
               <Button
                 title="Publicar"
                 icon="check"
