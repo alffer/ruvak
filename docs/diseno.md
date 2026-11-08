@@ -4,25 +4,27 @@ Referencia visual: la lámina «Sistema de diseño» y las maquetas de la usuari
 
 ## Marca
 
-- **Logo**: «ruvak» en minúsculas (Space Grotesk bold) con un **guion bajo lima** («ruvak_»). `RuvakWordmark`.
-- **Títulos**: llevan el mismo guion lima al final («Descubre Gijón_», «Explorar_»). `H1`/`H2` lo añaden solos; es decorativo y se oculta a los lectores de pantalla.
+- **Logo**: «ruvak» en minúsculas (Space Grotesk bold) con un **guion bajo lima** («ruvak\_»). `RuvakWordmark`.
+- **Títulos**: llevan el mismo guion lima al final («Descubre Gijón*», «Explorar*»). `H1`/`H2` lo añaden solos; es decorativo y se oculta a los lectores de pantalla.
 - **Personaje**: gato (a pie por la ciudad) y grajo (entre ciudades). Ver `mascota.md`.
 
 ## Color (lámina)
 
-| Token | Valor | Uso |
-| ----- | ----- | --- |
-| `brand.ink` | `#17191D` | Fondo oscuro; texto en claro; texto sobre lima y naranja |
-| `brand.cream` | `#F4F0E7` | Fondo claro; texto en oscuro; tarjetas «de papel» |
-| `brand.lime` | `#C9D84B` | **Acción principal** (relleno + texto tinta), estado activo, guion de la marca |
-| `brand.blue` | `#2457D6` | Enlaces e iconos activos **en tema claro** |
-| `brand.orange` | `#F06438` | Etiquetas de novedad y categoría (texto tinta) y marcadores de recomendación |
+| Token          | Valor     | Uso                                                                            |
+| -------------- | --------- | ------------------------------------------------------------------------------ |
+| `brand.ink`    | `#17191D` | Fondo oscuro; texto en claro; texto sobre lima y naranja                       |
+| `brand.cream`  | `#F4F0E7` | Fondo claro; texto en oscuro; tarjetas «de papel»                              |
+| `brand.lime`   | `#C9D84B` | **Acción principal** (relleno + texto tinta), estado activo, guion de la marca |
+| `brand.blue`   | `#2457D6` | Enlaces e iconos activos **en tema claro**                                     |
+| `brand.orange` | `#F06438` | Etiquetas de novedad y categoría (texto tinta) y marcadores de recomendación   |
 
 Dos temas: **oscuro (por defecto)** y **claro**. En Perfil › Apariencia: Sistema, Oscuro o Claro; se guarda en el dispositivo.
 
 **Contraste AAA (≥ 7:1) en todo el texto, en los dos temas**, comprobado automáticamente con `npm run check` (`scripts/check-contrast.ts`, que mide todas las combinaciones texto/fondo y falla si alguna baja de 7:1; bordes de controles ≥ 3:1). Valores del tema claro elegidos para cumplirlo: azul de acento `#173A94`, texto naranja `#7F2808`, peligro `#7E1B11`, éxito `#1F4A15`, secundario `#433F38`.
 
 **Desviaciones deliberadas de las maquetas por accesibilidad**
+
+- Insignia de pendientes (pestaña «Revisar»): número en tinta sobre `newsFill`, 7,5:1. El relleno en sí no llega a 3:1 sobre la barra clara (2,2:1); no es texto y el número y la etiqueta accesible transmiten la información, pero conviene vigilarlo si cambia la barra.
 - Etiqueta naranja: texto en **tinta** (no blanco: 3,2:1) sobre un naranja algo más claro, `newsFill` `#FA8C63` (tinta 7,5:1). El naranja de marca `#F06438` queda para marcadores y detalles, no para texto.
 - El lima **nunca** se usa como texto sobre fondo claro (1,4:1): ahí el acento es un azul más oscuro que el de la lámina (`#173A94` en lugar de `#2457D6`, que daba 5,4:1).
 - El «+» central lleva borde tinta en tema claro (forma lima sobre crema = 1,4:1).
@@ -32,14 +34,14 @@ Dos temas: **oscuro (por defecto)** y **claro**. En Perfil › Apariencia: Siste
 
 Reparto de la usuaria (licencias OFL, cargadas con `expo-font`):
 
-| Uso | Tipografía | Peso | Token |
-| --- | ---------- | ---- | ----- |
-| Logotipo `ruvak_` | Wordmark propio | Propio | `fonts.wordmark` (provisional: Space Grotesk Bold hasta tener el archivo) |
-| Titulares | Space Grotesk | SemiBold 600 | `hero`, `display`, `title`, `section`, `cardTitle` |
-| Subtítulos | Space Grotesk | Medium 500 | `subtitle` |
-| Textos y descripciones | Inter | Regular 400 | `body` |
-| Botones y navegación | Inter | Medium 500 | `label` (y `bodyStrong` para énfasis) |
-| Datos y metadatos | Inter | Regular 400 | `caption` |
+| Uso                    | Tipografía      | Peso         | Token                                                                     |
+| ---------------------- | --------------- | ------------ | ------------------------------------------------------------------------- |
+| Logotipo `ruvak_`      | Wordmark propio | Propio       | `fonts.wordmark` (provisional: Space Grotesk Bold hasta tener el archivo) |
+| Titulares              | Space Grotesk   | SemiBold 600 | `hero`, `display`, `title`, `section`, `cardTitle`                        |
+| Subtítulos             | Space Grotesk   | Medium 500   | `subtitle`                                                                |
+| Textos y descripciones | Inter           | Regular 400  | `body`                                                                    |
+| Botones y navegación   | Inter           | Medium 500   | `label` (y `bodyStrong` para énfasis)                                     |
+| Datos y metadatos      | Inter           | Regular 400  | `caption`                                                                 |
 
 Mayúsculas espaciadas (`overline`, Inter Medium) solo en etiquetas breves.
 

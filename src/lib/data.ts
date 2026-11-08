@@ -233,6 +233,8 @@ export interface SourceInput {
   normalizedUrl?: string | null;
   externalId?: string | null;
   label?: string | null;
+  /** Cuándo se comprobó el dato de esta fuente (ISO). Sin valor, solo las editoriales llevan fecha. */
+  checkedAt?: string | null;
 }
 
 function placeRow(p: PlaceInput) {
@@ -295,7 +297,7 @@ export async function addSource(placeId: number, s: SourceInput, editorial = fal
       normalized_url: s.normalizedUrl ?? null,
       external_id: s.externalId ?? null,
       label: s.label ?? null,
-      checked_at: editorial ? new Date().toISOString() : null,
+      checked_at: s.checkedAt ?? (editorial ? new Date().toISOString() : null),
     }),
   );
 }
@@ -469,7 +471,7 @@ export async function uploadDiscoveryImage(localUri: string, mimeType: string | 
   return supabase.storage.from('discovery-images').getPublicUrl(path).data.publicUrl;
 }
 
-/** Publica o retira un contenido. Solo lo usa el panel editorial (RLS lo limita a administradores). */
+/** Publica o retira un contenido. Solo lo usa la pestaña Revisar y el panel de contenido (RLS lo limita a administradores). */
 export async function setDiscoveryPublished(id: number, published: boolean) {
   check(await supabase.from('discovery_items').update({ published }).eq('id', id));
 }

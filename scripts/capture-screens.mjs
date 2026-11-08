@@ -225,7 +225,7 @@ const SHOTS = [
   ['07-nuevo-lugar', '/lugar/nuevo'],
   ['08-importar', '/importar'],
   ['09-perfil', '/perfil'],
-  ['10-admin', '/admin'],
+  ['10-admin', '/revisar'],
   ['11-viajes', '/viajes'],
 ];
 // [sufijo, tamaño, tema]: móvil en oscuro y claro, escritorio en oscuro.

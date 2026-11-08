@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 import type { PlaceInput } from '@/lib/data';
 import { useSession } from '@/lib/session';
 import { colors, space, typography } from '@/lib/tokens';
-import { Chip, Field, Row } from './ui';
+import { Chip, Field, P, Row } from './ui';
 
 export interface PlaceFormValue {
   name: string;
@@ -52,7 +52,25 @@ export function formToInput(v: PlaceFormValue, cityId: number | null): PlaceInpu
   };
 }
 
-export function PlaceFields({ value, onChange, showDescription }: { value: PlaceFormValue; onChange: (v: PlaceFormValue) => void; showDescription?: boolean }) {
+/** Valores sugeridos por OpenStreetMap. La marca «Sin verificar» desaparece en cuanto la usuaria edita el campo. */
+export interface PlaceSuggestion {
+  address: string | null;
+  categoryId: number | null;
+}
+
+const SUGGESTED_HINT = 'Sugerida por OpenStreetMap · Sin verificar';
+
+export function PlaceFields({
+  value,
+  onChange,
+  showDescription,
+  suggested,
+}: {
+  value: PlaceFormValue;
+  onChange: (v: PlaceFormValue) => void;
+  showDescription?: boolean;
+  suggested?: PlaceSuggestion;
+}) {
   const { categories } = useSession();
   const [touched, setTouched] = useState(false);
   const set = (patch: Partial<PlaceFormValue>) => onChange({ ...value, ...patch });
@@ -68,13 +86,25 @@ export function PlaceFields({ value, onChange, showDescription }: { value: Place
       />
       <View style={{ gap: space[2] }}>
         <Text style={[typography.label, { color: colors.text }]}>Categoría</Text>
+        {suggested?.categoryId != null && value.categoryId === suggested.categoryId ? (
+          <P muted style={{ fontSize: 14 }}>
+            {SUGGESTED_HINT}
+          </P>
+        ) : null}
         <Row wrap accessibilityLabel="Categoría">
           {categories.map((c) => (
             <Chip key={c.id} label={c.name} selected={value.categoryId === c.id} onPress={() => set({ categoryId: c.id })} />
           ))}
         </Row>
       </View>
-      <Field label="Dirección" optional value={value.address} onChangeText={(address) => set({ address })} autoComplete="street-address" />
+      <Field
+        label="Dirección"
+        optional
+        hint={suggested?.address && value.address === suggested.address ? SUGGESTED_HINT : undefined}
+        value={value.address}
+        onChangeText={(address) => set({ address })}
+        autoComplete="street-address"
+      />
       <Field label="Zona o barrio" optional value={value.zone} onChangeText={(zone) => set({ zone })} placeholder="Ej.: Cimavilla" />
       <Field
         label="Coordenadas"

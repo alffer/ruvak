@@ -1,35 +1,55 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Linking, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
 import { KindBadge, VerificationBadge } from '@/components/Place';
-import { Badge, Button, Card, ErrorState, H2, InlineNotice, P, Row, Screen, SkeletonList } from '@/components/ui';
+import { Badge, Button, Card, confirmAction, ErrorState, H1, H2, InlineNotice, LinkButton, P, Row, Screen, SkeletonList } from '@/components/ui';
 import { confirmDiscoveryOpened, deleteDiscovery, getDiscovery, getEditorialPlaces, setDiscoveryPublished } from '@/lib/data';
-import { formatDate } from '@/lib/format';
+import { formatDate, openExternal } from '@/lib/format';
+import { setPendingCount } from '@/lib/pendientes';
 import { useSession } from '@/lib/session';
 import { colors, space, typography } from '@/lib/tokens';
 import { useLoad } from '@/lib/useLoad';
 
-/** Panel editorial mínimo (RF-14). La seguridad real está en RLS: un no-admin no puede escribir. */
-export default function Admin() {
+/**
+ * Pestaña «Revisar» (solo administradoras): novedades que trae el proceso diario, pendientes de decisión.
+ * Nada llega publicado sin pasar por aquí. La seguridad real está en RLS: un no-admin no puede escribir.
+ */
+export default function Revisar() {
   const { profile, activeCity } = useSession();
   const items = useLoad(() => (activeCity ? getDiscovery(activeCity.id, { includeDrafts: true, includeHidden: true }) : Promise.resolve([])), [activeCity?.id]);
   const places = useLoad(getEditorialPlaces, []);
   const [busy, setBusy] = useState<number | null>(null);
-  const [note, setNote] = useState<string | null>(null);
+  const [note, setNote] = useState<{ tone: 'info' | 'error'; text: string } | null>(null);
+
+  // Pendientes = borradores con fuente (sin fuente no se publica desde aquí). Los demás se cuentan aparte.
   const drafts = (items.data ?? []).filter((i) => !i.published && i.sourceUrl);
+  const draftsWithoutSource = (items.data ?? []).filter((i) => !i.published && !i.sourceUrl).length;
+
+  // La insignia de la pestaña se actualiza con cada carga (publicar o descartar la recalcula).
+  useEffect(() => {
+    if (items.data) setPendingCount(items.data.filter((i) => !i.published && i.sourceUrl).length);
+    else if (items.error) setPendingCount(null);
+  }, [items.data, items.error]);
 
   async function act(id: number, fn: () => Promise<void>, ok: string) {
     setBusy(id);
     setNote(null);
     try {
       await fn();
-      setNote(ok);
+      setNote({ tone: 'info', text: ok });
       items.reload();
-    } catch (e) {
-      setNote((e as Error).message);
+    } catch {
+      // El mensaje técnico (puede venir en inglés) no se muestra; la usuaria puede volver a intentarlo.
+      setNote({ tone: 'error', text: 'No se pudo completar la acción. Inténtalo de nuevo.' });
     } finally {
       setBusy(null);
     }
+  }
+
+  function discard(id: number, title: string) {
+    confirmAction('¿Descartar esta novedad?', `«${title}» se borra de la base de datos y no se puede deshacer.`, 'Descartar', () =>
+      act(id, () => deleteDiscovery(id), `«${title}» descartada.`),
+    );
   }
 
   if (profile?.role !== 'admin')
@@ -41,19 +61,23 @@ export default function Admin() {
 
   return (
     <Screen>
-      <Row gap={space[2]} wrap>
-        <Button title="Nuevo contenido" icon="plus" onPress={() => router.push('/admin/contenido')} />
-        <Button title="Nueva ficha editorial" icon="pin" variant="secondary" onPress={() => router.push('/lugar/nuevo')} />
-      </Row>
-      <P muted style={{ fontSize: 14 }}>
-        Antes de publicar: fuente, fecha de revisión y estado de verificación. Si un dato puede haber cambiado, márcalo como «Información antigua» o retíralo.
-      </P>
+      <H1>Revisar</H1>
 
       {/* Borradores que trae el proceso diario de novedades: nada se publica sin tu decisión. */}
       <View style={{ gap: space[3] }}>
-        <H2>{`Pendientes de revisar (${drafts.length})`}</H2>
-        {note ? <InlineNotice tone="info">{note}</InlineNotice> : null}
-        {items.data && !drafts.length ? <P muted>No hay novedades pendientes.</P> : null}
+        <H2>{items.data ? `Pendientes de revisar (${drafts.length})` : 'Pendientes de revisar'}</H2>
+        <P muted style={{ fontSize: 14 }}>
+          Antes de publicar: fuente, fecha de revisión y estado de verificación. Si un dato puede haber cambiado, márcalo como «Información antigua» o retíralo.
+        </P>
+        {note ? <InlineNotice tone={note.tone}>{note.text}</InlineNotice> : null}
+        {items.error ? <ErrorState message="No se pudieron cargar las novedades." onRetry={items.reload} /> : null}
+        {items.loading && !items.data ? <SkeletonList rows={2} /> : null}
+        {items.data && !drafts.length && !items.error ? <P muted>No hay novedades pendientes.</P> : null}
+        {draftsWithoutSource > 0 ? (
+          <P muted style={{ fontSize: 14 }}>
+            {`${draftsWithoutSource} borrador${draftsWithoutSource === 1 ? '' : 'es'} sin fuente: no se publican desde aquí. Revísalos en «Contenido».`}
+          </P>
+        ) : null}
         {drafts.map((i) => (
           <Card key={i.id}>
             <Row gap={space[1]} wrap>
@@ -68,23 +92,23 @@ export default function Admin() {
             ) : null}
             <P muted style={{ fontSize: 14 }}>{`Fuente: ${i.sourceName ?? 'sin indicar'}`}</P>
             <Row gap={space[2]} wrap>
-              {i.kind === 'upcoming_opening' || i.kind === 'announced' ? (
-                <Button
-                  title="Ya está abierto"
-                  icon="sparkles"
-                  variant="secondary"
-                  loading={busy === i.id}
-                  onPress={() => act(i.id, () => confirmDiscoveryOpened(i.id), `«${i.title}» confirmada como abierta.`)}
-                />
-              ) : null}
               <Button
                 title="Publicar"
                 icon="check"
                 loading={busy === i.id}
                 onPress={() => act(i.id, () => setDiscoveryPublished(i.id, true), `«${i.title}» publicada.`)}
               />
-              <Button title="Abrir fuente" icon="external" variant="secondary" onPress={() => Linking.openURL(i.sourceUrl!)} />
-              <Button title="Descartar" icon="trash" variant="danger" onPress={() => act(i.id, () => deleteDiscovery(i.id), `«${i.title}» descartada.`)} />
+              {i.kind === 'upcoming_opening' || i.kind === 'announced' ? (
+                <Button
+                  title="Ya está abierto"
+                  icon="sparkles"
+                  variant="secondary"
+                  disabled={busy !== null}
+                  onPress={() => act(i.id, () => confirmDiscoveryOpened(i.id), `«${i.title}» confirmada como abierta.`)}
+                />
+              ) : null}
+              <LinkButton label="Abrir fuente" onPress={() => openExternal(i.sourceUrl!)} />
+              <Button title="Descartar" icon="trash" variant="danger" disabled={busy !== null} onPress={() => discard(i.id, i.title)} />
             </Row>
           </Card>
         ))}
@@ -92,10 +116,8 @@ export default function Admin() {
 
       <View style={{ gap: space[3] }}>
         <H2>{`Descubrir · ${activeCity?.name ?? ''}`}</H2>
-        {items.error ? <ErrorState message={items.error} onRetry={items.reload} /> : null}
-        {items.loading && !items.data ? <SkeletonList rows={3} /> : null}
         {(items.data ?? []).map((i) => (
-          <Card key={i.id} onPress={() => router.push(`/admin/contenido?id=${i.id}`)} accessibilityLabel={`Editar ${i.title}`}>
+          <Card key={i.id} onPress={() => router.push(`/admin/contenido?id=${i.id}`)} accessibilityLabel={`Abrir ${i.title} para editar`}>
             <Row gap={space[1]} wrap>
               <KindBadge kind={i.kind} />
               <VerificationBadge v={i.verification} />
@@ -124,6 +146,11 @@ export default function Admin() {
           </Card>
         ))}
       </View>
+
+      <Row gap={space[2]} wrap>
+        <Button title="Nuevo contenido" icon="plus" variant="secondary" onPress={() => router.push('/admin/contenido')} />
+        <Button title="Nueva ficha editorial" icon="pin" variant="secondary" onPress={() => router.push('/lugar/nuevo')} />
+      </Row>
     </Screen>
   );
 }

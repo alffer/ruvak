@@ -124,16 +124,6 @@ export default function ProfileScreen() {
         </Row>
       </Card>
 
-      {profile?.role === 'admin' ? (
-        <Card>
-          <H2>Equipo editorial</H2>
-          <P muted style={{ fontSize: 14 }}>
-            Publica y revisa lugares, novedades y planes.
-          </P>
-          <Button title="Abrir panel editorial" icon="pencil" variant="secondary" onPress={() => router.push('/admin')} style={{ alignSelf: 'flex-start' }} />
-        </Card>
-      ) : null}
-
       <Card>
         <H2>Privacidad</H2>
         <P muted style={{ fontSize: 14 }}>
