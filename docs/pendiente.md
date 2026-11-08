@@ -27,3 +27,4 @@
 - Fuentes locales y frecuencia de revisión; quién mantiene el contenido editorial.
 - Cómo pasa un lugar privado a ficha editorial (proponer → revisar).
 - Despliegue de la web (por ejemplo EAS Hosting) y analítica (§15) sin notas ni ubicación.
+- **Despliegue web**: configurar en GitHub las variables `CLOUDFLARE_WORKER_NAME` y `CLOUDFLARE_ACCOUNT_ID`, y los secretos `CLOUDFLARE_API_TOKEN`, `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`. Luego, en Supabase, añadir la URL del Worker a Site URL y a Redirect URLs (`<URL>/**`). El workflow solo existe en `main`, así que se probará tras fusionar la pull request.

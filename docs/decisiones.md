@@ -22,3 +22,4 @@
 | 2026-11-08 | Perfil en móvil oculto de la barra con `tabBarItemStyle`, no con `href: null` | `href: null` hace que navegar a la ruta redirija a Inicio: el botón de perfil de la cabecera no funcionaba (lo detectó la revisión UX) |
 | 2026-11-08 | Agenda y Viajes sin accesos visibles hasta que existan | Llevaban a páginas vacías (confunde); las rutas siguen creadas |
 | 2026-11-08 | Reparto tipográfico de la usuaria: Space Grotesk 600/500, Inter 400/500; wordmark propio | Pesos concretos por uso; el wordmark se compone provisionalmente hasta tener el archivo |
+| 2026-11-08 | Web en Cloudflare Workers (activos estáticos) con `not_found_handling: single-page-application`, como Belladonna; sin `_redirects` | Workers no lee `_redirects`; sin esa opción, recargar `/lugar/101` daría 404. npm en lugar de pnpm porque el repositorio tiene `package-lock.json` |

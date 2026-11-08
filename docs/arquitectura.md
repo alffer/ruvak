@@ -72,7 +72,7 @@ docs/                   esta documentación
 
 - **WebView**: sus tipos colapsan a `never` con esta versión de RN; `MapCanvas.tsx` lo tipa con las props de Android (como Sandow).
 - **Pestañas ocultas**: no usar `href: null` para esconder una pestaña a la que se navega por código (el Perfil en móvil): en Expo Router 58 la marca como oculta y navegar a ella redirige a Inicio. Se oculta con `tabBarItemStyle: { display: 'none' }`. `scripts/capture-screens.mjs` incluye una prueba de humo que pulsa el botón de perfil.
-- **Despliegue web (Cloudflare Pages)**: `npx expo export --platform web` genera `dist/`. `public/_redirects` manda todas las rutas a `index.html` para que `/lugar/101` no dé 404. Las variables `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY` se configuran en Cloudflare, porque se incluyen al compilar. `NODE_VERSION=22` en el build.
+- **Despliegue web (Cloudflare Workers)**: `.github/workflows/deploy-web.yml` publica `dist/` en cada push a `main` (y a mano con `workflow_dispatch`). El Worker sirve activos estáticos con `not_found_handling: single-page-application`, para que `/lugar/101` devuelva `index.html`. Las claves de Supabase van como secretos de GitHub, porque se incluyen al compilar. Se salta si no existe la variable `CLOUDFLARE_WORKER_NAME`. Cloudflare Pages y `_redirects` no aplican aquí.
 - **TypeScript 6** ya no incluye `@types/node` por defecto: los scripts llevan `/// <reference types="node" />`.
 - **React Compiler (lint)**: los formularios que parten de datos cargados se montan con `key` y estado inicial
   (sin copiar en `useEffect`).
