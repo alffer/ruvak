@@ -469,7 +469,7 @@ export async function uploadDiscoveryImage(localUri: string, mimeType: string | 
   return supabase.storage.from('discovery-images').getPublicUrl(path).data.publicUrl;
 }
 
-/** Publica o retira un contenido. Solo lo usa el panel editorial (RLS lo limita a administradores). */
+/** Publica o retira un contenido. Solo lo usa la pestaña Revisar y el panel de contenido (RLS lo limita a administradores). */
 export async function setDiscoveryPublished(id: number, published: boolean) {
   check(await supabase.from('discovery_items').update({ published }).eq('id', id));
 }

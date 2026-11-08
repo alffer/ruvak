@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -46,6 +46,24 @@ function AddButton({ wide }: { wide: boolean }) {
   );
 }
 
+/**
+ * Móvil (barra de 5 elementos): «Revisar» va como icono en la cabecera, con su número de pendientes.
+ * Solo lo ven administradoras.
+ */
+function ReviewButton({ pending }: { pending: number | null }) {
+  const label = pending === null ? 'Revisar, no se pudo comprobar' : `Revisar, ${pending} pendientes`;
+  return (
+    <View style={styles.reviewWrap}>
+      <IconButton name="pending" label={label} onPress={() => router.navigate('/revisar')} />
+      {pending ? (
+        <View style={styles.reviewBadge} importantForAccessibility="no" accessible={false}>
+          <Text style={styles.reviewBadgeText}>{pending}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -54,8 +72,10 @@ export default function TabsLayout() {
   const isAdmin = profile?.role === 'admin';
   const cityId = activeCity?.id;
   const pending = usePendingCount();
+  const pathname = usePathname();
 
-  // Insignia de «Revisar»: cuenta los borradores de la ciudad activa. Sin sesión de administración no hay pendientes.
+  // Recuento de pendientes de la ciudad activa. Se vuelve a calcular en cada cambio de pantalla, así la insignia
+  // refleja lo que se acaba de publicar, descartar o crear. Si la carga falla, queda «no comprobado» (null), no 0.
   useEffect(() => {
     if (!isAdmin || cityId == null) {
       setPendingCount(0);
@@ -63,8 +83,8 @@ export default function TabsLayout() {
     }
     getDiscovery(cityId, { includeDrafts: true, includeHidden: true })
       .then((list) => setPendingCount(list.filter((i) => !i.published && i.sourceUrl).length))
-      .catch(() => setPendingCount(0));
-  }, [isAdmin, cityId]);
+      .catch(() => setPendingCount(null));
+  }, [isAdmin, cityId, pathname]);
   const tab = (t: (typeof TABS)[number]) => (
     <Tabs.Screen
       key={t.name}
@@ -100,6 +120,7 @@ export default function TabsLayout() {
         headerRight: () => (
           <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: space[2] }}>
             <CitySwitcher />
+            {isAdmin && !wide ? <ReviewButton pending={pending} /> : null}
             <IconButton name="user" label="Perfil y ajustes" onPress={() => router.navigate('/perfil')} />
           </View>
         ),
@@ -122,9 +143,10 @@ export default function TabsLayout() {
         options={{
           title: 'Revisar',
           // Solo administradoras: para el resto la pestaña no ocupa hueco. Icono, texto y número siempre.
-          ...(isAdmin ? {} : { tabBarItemStyle: { display: 'none' as const } }),
-          tabBarAccessibilityLabel: pending ? `Revisar, ${pending} pendientes` : 'Revisar',
-          tabBarBadge: pending > 0 ? pending : undefined,
+          // Escritorio y solo administradoras: pestaña en la barra lateral. En móvil va en la cabecera (ReviewButton).
+          ...(isAdmin && wide ? {} : { tabBarItemStyle: { display: 'none' as const } }),
+          tabBarAccessibilityLabel: pending === null ? 'Revisar, no se pudo comprobar' : `Revisar, ${pending} pendientes`,
+          tabBarBadge: pending ? pending : undefined,
           tabBarBadgeStyle: { backgroundColor: colors.newsFill, color: colors.onNews, fontFamily: fonts.bodyMedium },
           tabBarLabel: ({ color }) => (
             <Text numberOfLines={1} style={[labelStyle, { color: String(color) }, wide && { fontSize: 15, textAlign: 'left', marginLeft: 12 }]}>
@@ -155,6 +177,21 @@ export default function TabsLayout() {
 
 const styles = themed(() =>
   StyleSheet.create({
+    reviewWrap: { position: 'relative' },
+    reviewBadge: {
+      position: 'absolute',
+      top: 4,
+      right: 2,
+      minWidth: 20,
+      height: 20,
+      borderRadius: 10,
+      paddingHorizontal: 5,
+      backgroundColor: colors.newsFill,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    // Tinta sobre naranja claro: 7,5:1 (AAA).
+    reviewBadgeText: { fontFamily: fonts.bodyMedium, fontSize: 12, lineHeight: 16, color: colors.onNews },
     addSlot: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     addWide: { paddingHorizontal: space[3], paddingVertical: space[2] },
     add: {

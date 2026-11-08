@@ -4,7 +4,7 @@ Referencia completa: [documento-producto.md](documento-producto.md). Aquí, lo i
 
 ## Navegación
 
-- **Móvil**: barra inferior con Inicio, Explorar, **«+» (añadir lugar)**, Guardados y Mapa. El perfil está en la cabecera. Las administradoras ven además **Revisar**, con el número de novedades pendientes como insignia.
+- **Móvil**: barra inferior con Inicio, Explorar, **«+» (añadir lugar)**, Guardados y Mapa. El perfil está en la cabecera. Las administradoras tienen además **Revisar** (icono de la cabecera en móvil; pestaña en escritorio) con el número de novedades pendientes como insignia.
 - **Escritorio (≥ 900 px)**: barra lateral con «Añadir lugar» y Perfil.
 - **Tema** claro u oscuro (Perfil › Apariencia; por defecto oscuro, «Sistema» sigue al dispositivo).
 - **Selector de ciudad** en la cabecera de cada pestaña: ciudad activa y si es «Habitual» o «Explorando». Cambia Descubrir y Mapa; la colección es global.

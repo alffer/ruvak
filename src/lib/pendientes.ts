@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Número de novedades pendientes de revisar (borradores). Lo calculan el panel «Revisar» y la barra de pestañas
- * para que la insignia se actualice al publicar o descartar sin recargar la app. Solo lo usan administradoras.
+ * Número de novedades pendientes de revisar (borradores). `null` = no se ha podido comprobar (no es lo mismo que 0).
+ * Lo calculan la cabecera y el panel «Revisar»; solo lo usan administradoras.
  */
-let current = 0;
-const listeners = new Set<(n: number) => void>();
+let current: number | null = null;
+const listeners = new Set<(n: number | null) => void>();
 
-export function setPendingCount(n: number) {
+export function setPendingCount(n: number | null) {
   current = n;
   listeners.forEach((fn) => fn(n));
 }
 
-export function usePendingCount(): number {
-  const [n, setN] = useState(current);
+export function usePendingCount(): number | null {
+  const [n, setN] = useState<number | null>(current);
   useEffect(() => {
     listeners.add(setN);
     return () => {
