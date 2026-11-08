@@ -56,3 +56,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+          # El instalador por defecto trae Wrangler 3, que no lee esta configuración.
+          wranglerVersion: "4"
