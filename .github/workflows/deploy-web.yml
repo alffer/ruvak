@@ -34,9 +34,14 @@ jobs:
         env:
           WORKER_NAME: ${{ vars.CLOUDFLARE_WORKER_NAME }}
         run: |
+          # Wrangler 4 exige un punto de entrada. Los archivos los sirve Cloudflare; este Worker solo cumple el requisito.
+          cat > worker.js <<'JS'
+          export default { fetch: () => new Response("Not found", { status: 404 }) };
+          JS
           cat > wrangler.jsonc <<JSON
           {
             "name": "${WORKER_NAME}",
+            "main": "worker.js",
             "compatibility_date": "2026-11-01",
             "assets": {
               "directory": "./dist",
