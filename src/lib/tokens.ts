@@ -7,12 +7,14 @@
  * tema elegido y ThemeProvider (src/lib/theme.tsx) vuelve a montar la app. Los estilos que usan colores se
  * crean con `themed(() => StyleSheet.create(...))` para que se recalculen al cambiar de tema.
  *
- * Contraste medido (WCAG 2.2):
- * - Oscuro: texto crema 15,5:1; secundario ≥ 7,1:1; lima sobre fondo 11,2:1 (tinta sobre lima 11,2:1).
- * - Claro: texto tinta 15,5:1; secundario ≥ 6,9:1; azul (enlaces, activo) ≥ 4,8:1 (AA).
- * - Tinta sobre naranja 5,5:1 (la lámina usa texto blanco, que daría 2,8:1: no cumple, se usa tinta).
- * - El lima no va como texto en claro (1,2:1): solo como relleno con texto tinta o como detalle decorativo.
- * - Bordes de controles ≥ 3,1:1 en los dos temas.
+ * Contraste medido (WCAG 2.2), AAA (≥ 7:1) en todo el texto, sobre bg, card, raised y surface0, en los dos temas:
+ * - Oscuro: texto crema ≥ 11,5:1; secundario ≥ 7,1:1; lima (acento) ≥ 8,3:1; tinta sobre lima 11,2:1.
+ * - Claro: texto tinta ≥ 13,8:1; secundario #433F38 ≥ 8,2:1; azul de acento #173A94 ≥ 7,9:1; naranja de texto
+ *   #7F2808 ≥ 7,4:1; peligro #7E1B11 ≥ 8,0:1; éxito #1F4A15 ≥ 8,0:1.
+ * - Etiqueta naranja: relleno `newsFill` #FA8C63 con texto tinta 7,5:1. El naranja de marca #F06438 (tinta 5,5:1; blanco,
+ *   que usa la lámina, 3,2:1) queda para elementos que no son texto (marcadores, detalles).
+ * - El lima no va como texto en claro (1,4:1): solo como relleno con texto tinta o como detalle decorativo.
+ * - Bordes de controles ≥ 3,1:1 y formas (marcadores, botón «+») ≥ 3:1 gracias a su borde tinta.
  */
 
 export const brand = {
@@ -50,8 +52,10 @@ const darkPalette = {
   mark: brand.lime,
   /** Etiquetas de novedad y categoría: naranja con texto tinta. */
   news: brand.orange,
+  /** Relleno de etiquetas de novedad: naranja más claro para que el texto tinta llegue a AAA. */
+  newsFill: '#FA8C63',
   onNews: brand.ink,
-  newsText: '#FFA587',
+  newsText: '#FFB59C',
   danger: '#FFB4AB',
   success: '#C9E7B4',
   scrim: 'rgba(17,19,22,0.78)',
@@ -72,22 +76,23 @@ const light: Palette = {
   raised: '#EAE3D6',
   paper: '#FCFAF5',
   onPaper: brand.ink,
-  onPaperSecondary: '#4E4A43',
+  onPaperSecondary: '#433F38',
   text: brand.ink,
-  textSecondary: '#4E4A43',
-  border: 'rgba(23,25,29,0.10)',
-  outline: '#857F75',
+  textSecondary: '#433F38',
+  border: 'rgba(23,25,29,0.18)',
+  outline: '#7C766C',
   primary: brand.lime,
   onPrimary: brand.ink,
   solid: brand.ink,
   onSolid: brand.cream,
-  accentText: brand.blue,
+  accentText: '#173A94',
   mark: brand.lime,
   news: brand.orange,
+  newsFill: '#FA8C63',
   onNews: brand.ink,
-  newsText: '#B23A12',
-  danger: '#A3261A',
-  success: '#2F6A1F',
+  newsText: '#7F2808',
+  danger: '#7E1B11',
+  success: '#1F4A15',
   scrim: 'rgba(23,25,29,0.6)',
   overlay: 'rgba(23,25,29,0.45)',
   markerSaved: brand.lime,
@@ -164,9 +169,11 @@ export const typography = {
   /** Botones, filtros y navegación. */
   label: { fontFamily: fonts.bodyMedium, fontSize: 14, lineHeight: 20 },
   /** Datos y metadatos. */
-  caption: { fontFamily: fonts.body, fontSize: 13, lineHeight: 18 },
+  caption: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20 },
+  /** Solo para etiquetas de iconos en recuadros estrechos (accesos por categoría). */
+  micro: { fontFamily: fonts.bodyMedium, fontSize: 13, lineHeight: 18 },
   /** Mayúsculas espaciadas: solo etiquetas breves. */
-  overline: { fontFamily: fonts.bodyMedium, fontSize: 12, lineHeight: 16, letterSpacing: 1.2, textTransform: 'uppercase' as const },
+  overline: { fontFamily: fonts.bodyMedium, fontSize: 13, lineHeight: 18, letterSpacing: 1.2, textTransform: 'uppercase' as const },
 } as const;
 
 export const iconSize = { sm: 16, md: 20, lg: 24 } as const;

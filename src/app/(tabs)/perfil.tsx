@@ -121,8 +121,6 @@ export default function ProfileScreen() {
         <H2>Tus guardados</H2>
         <Row gap={space[2]} wrap>
           <Button title="Importar de Google" icon="upload" variant="secondary" onPress={() => router.push('/importar')} />
-          <Button title="Agenda" icon="calendar" variant="secondary" onPress={() => router.push('/agenda')} />
-          <Button title="Viajes" icon="plane" variant="secondary" onPress={() => router.push('/viajes')} />
         </Row>
       </Card>
 

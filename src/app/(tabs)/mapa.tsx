@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { IconButton } from '@/components/Icon';
 import type { MapMarker } from '@/components/map/mapShared';
 import { PlaceListItem, PlaceStatusBadge } from '@/components/Place';
-import { Badge, Button, Chip, ChipRow, ErrorState, Loading, P, Row, Segmented } from '@/components/ui';
+import { Badge, Button, Card, Chip, ChipRow, ErrorState, Loading, P, Row, Segmented } from '@/components/ui';
 import { getCollections, getDiscovery, getMyPlaces } from '@/lib/data';
 import { EMPTY_FILTERS, filterPlaces, type StatusFilter } from '@/lib/filters';
 import { plural } from '@/lib/format';
@@ -35,6 +35,8 @@ export default function MapScreen() {
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [collectionId, setCollectionId] = useState<number | null>(null);
   const [selected, setSelected] = useState<MapMarker | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const activeFilters = (status !== 'all' ? 1 : 0) + (categoryId != null ? 1 : 0) + (collectionId != null ? 1 : 0);
 
   const filtered = useMemo(
     () => filterPlaces(places.data ?? [], { ...EMPTY_FILTERS, status, categoryId, collectionId, cityId: activeCity?.id ?? null }, categoryName),
@@ -88,30 +90,52 @@ export default function MapScreen() {
           <MapLegend />
         </Row>
         <ChipRow>
-          <Chip label="Mis lugares" selected={showSaved} onPress={() => setShowSaved(!showSaved)} />
-          <Chip label="Recomendaciones" selected={showDiscovery} onPress={() => setShowDiscovery(!showDiscovery)} />
-          {STATUS.map((s) => (
-            <Chip key={s.key} label={s.label} selected={status === s.key} onPress={() => setStatus(s.key)} />
-          ))}
+          {/* Capas del mapa: activadas por defecto, por eso en tono neutro (el lima es para filtros activos). */}
+          <Chip label="Mis lugares" selected={showSaved} quiet onPress={() => setShowSaved(!showSaved)} />
+          <Chip label="Recomendaciones" selected={showDiscovery} quiet onPress={() => setShowDiscovery(!showDiscovery)} />
+          <Chip
+            label={activeFilters ? `Filtros (${activeFilters})` : 'Filtros'}
+            icon="filters"
+            selected={activeFilters > 0}
+            onPress={() => setShowFilters(!showFilters)}
+          />
         </ChipRow>
-        <ChipRow>
-          {categories.map((c) => (
-            <Chip key={c.id} label={c.name} selected={categoryId === c.id} onPress={() => setCategoryId(categoryId === c.id ? null : c.id)} />
-          ))}
-          {(lists.data ?? []).map((l) => (
-            <Chip
-              key={`l${l.id}`}
-              label={l.name}
-              icon="list"
-              selected={collectionId === l.id}
-              onPress={() => setCollectionId(collectionId === l.id ? null : l.id)}
-            />
-          ))}
-        </ChipRow>
+        {showFilters ? (
+          <Card>
+            <Text style={[typography.label, { color: colors.text }]}>Estado</Text>
+            <Row wrap>
+              {STATUS.map((st) => (
+                <Chip key={st.key} label={st.label} selected={status === st.key} quiet={st.key === 'all'} onPress={() => setStatus(st.key)} />
+              ))}
+            </Row>
+            <Text style={[typography.label, { color: colors.text }]}>Categoría</Text>
+            <Row wrap>
+              {categories.map((c) => (
+                <Chip key={c.id} label={c.name} selected={categoryId === c.id} onPress={() => setCategoryId(categoryId === c.id ? null : c.id)} />
+              ))}
+            </Row>
+            {(lists.data ?? []).length ? (
+              <>
+                <Text style={[typography.label, { color: colors.text }]}>Lista</Text>
+                <Row wrap>
+                  {(lists.data ?? []).map((l) => (
+                    <Chip
+                      key={`l${l.id}`}
+                      label={l.name}
+                      icon="list"
+                      selected={collectionId === l.id}
+                      onPress={() => setCollectionId(collectionId === l.id ? null : l.id)}
+                    />
+                  ))}
+                </Row>
+              </>
+            ) : null}
+          </Card>
+        ) : null}
         {withoutCoords > 0 ? (
           <P
             muted
-            style={{ fontSize: 13 }}
+            style={{ fontSize: 14 }}
           >{`${plural(withoutCoords, 'lugar', 'lugares')} sin ubicación no ${withoutCoords === 1 ? 'aparece' : 'aparecen'} en el mapa (sí en la lista).`}</P>
         ) : null}
       </View>

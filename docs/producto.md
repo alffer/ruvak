@@ -4,7 +4,7 @@ Referencia completa: [documento-producto.md](documento-producto.md). Aquí, lo i
 
 ## Navegación
 
-- **Móvil**: barra inferior con Inicio, Explorar, **«+» (añadir lugar)**, Guardados y Mapa. El perfil está en la cabecera; Agenda y Viajes se abren desde Inicio y Perfil.
+- **Móvil**: barra inferior con Inicio, Explorar, **«+» (añadir lugar)**, Guardados y Mapa. El perfil está en la cabecera.
 - **Escritorio (≥ 900 px)**: barra lateral con «Añadir lugar» y Perfil.
 - **Tema** claro u oscuro (Perfil › Apariencia; por defecto oscuro, «Sistema» sigue al dispositivo).
 - **Selector de ciudad** en la cabecera de cada pestaña: ciudad activa y si es «Habitual» o «Explorando». Cambia Descubrir y Mapa; la colección es global.
@@ -27,7 +27,7 @@ Referencia completa: [documento-producto.md](documento-producto.md). Aquí, lo i
 | `/lugar/editar/[id]`      | Editar la ficha (propia; las editoriales solo administradores).                                                    |
 | `/importar`               | Google Takeout: instrucciones, vista previa, selección, duplicados, resumen.                                       |
 | `/perfil`                 | Nombre, intereses, personalización, importar, panel editorial (admin), exportar datos, cerrar sesión, borrar cuenta. |
-| `/agenda`, `/viajes`      | «Próximamente» (fase P1).                                                                                          |
+| `/agenda`, `/viajes`      | Rutas creadas pero **sin acceso visible** hasta la fase P1 (llevaban a páginas vacías).                            |
 | `/admin`, `/admin/contenido` | Panel editorial: contenido de Descubrir (tipo, verificación, fuente, fecha, publicar, retirar) y fichas editoriales. |
 
 ## Reglas de comportamiento

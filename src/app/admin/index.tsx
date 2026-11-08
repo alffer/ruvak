@@ -43,7 +43,7 @@ export default function Admin() {
               {i.published ? <Badge label="Publicado" tone="blue" icon="check" /> : <Badge label="Borrador" icon="pencil" />}
             </Row>
             <Text style={[typography.cardTitle, { color: colors.text }]}>{i.title}</Text>
-            <P muted style={{ fontSize: 13 }}>
+            <P muted style={{ fontSize: 14 }}>
               {[i.sourceName ? `Fuente: ${i.sourceName}` : 'Sin fuente', i.verifiedAt ? `revisado ${formatDate(i.verifiedAt)}` : 'sin fecha de revisión'].join(
                 ' · ',
               )}

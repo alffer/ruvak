@@ -20,11 +20,12 @@ Referencia visual: la lámina «Sistema de diseño» y las maquetas de la usuari
 
 Dos temas: **oscuro (por defecto)** y **claro**. En Perfil › Apariencia: Sistema, Oscuro o Claro; se guarda en el dispositivo.
 
-Contraste medido (WCAG 2.2): texto 15,5:1; secundario ≥ 6,9:1; lima sobre fondo oscuro 11,2:1; azul sobre crema 5,4:1 (AA); tinta sobre naranja 5,5:1; bordes de controles ≥ 3,1:1.
+**Contraste AAA (≥ 7:1) en todo el texto, en los dos temas**, comprobado automáticamente con `npm run check` (`scripts/check-contrast.ts`, que mide todas las combinaciones texto/fondo y falla si alguna baja de 7:1; bordes de controles ≥ 3:1). Valores del tema claro elegidos para cumplirlo: azul de acento `#173A94`, texto naranja `#7F2808`, peligro `#7E1B11`, éxito `#1F4A15`, secundario `#433F38`.
 
 **Desviaciones deliberadas de las maquetas por accesibilidad**
-- Texto de la etiqueta naranja en **tinta**, no blanco (blanco sobre naranja da 2,8:1).
-- El lima **nunca** se usa como texto sobre fondo claro (1,2:1): ahí el acento es el azul.
+- Etiqueta naranja: texto en **tinta** (no blanco: 3,2:1) sobre un naranja algo más claro, `newsFill` `#FA8C63` (tinta 7,5:1). El naranja de marca `#F06438` queda para marcadores y detalles, no para texto.
+- El lima **nunca** se usa como texto sobre fondo claro (1,4:1): ahí el acento es un azul más oscuro que el de la lámina (`#173A94` en lugar de `#2457D6`, que daba 5,4:1).
+- El «+» central lleva borde tinta en tema claro (forma lima sobre crema = 1,4:1).
 - Las maquetas muestran valoraciones, horarios, precio medio, wifi y «pet friendly»: **solo aparecerán cuando existan datos reales** (editorial o fuente autorizada). Sin foto, portada tinta con la categoría.
 
 ## Tipografía
@@ -44,7 +45,8 @@ Mayúsculas espaciadas (`overline`, Inter Medium) solo en etiquetas breves.
 
 ## Forma y componentes
 
-- Botones y filtros en **píldora**; tarjetas con radio 16; escala de 4 px.
+- Botones y filtros en **píldora**; tarjetas con radio 16; escala de 4 px. Objetivos táctiles de **48 px** (chips, segmentos, botones, enlaces).
+- **Pocos controles por pantalla**: los filtros secundarios se agrupan en un botón «Filtros» (Explorar, Mapa, Guardados); lo activo por defecto («Todo», capas del mapa) va en tono neutro y el lima queda para lo realmente activo.
 - Botones: `primary` (lima), `solid` (tinta en claro, crema en oscuro: «Guardar»), `secondary` (contorno), `ghost`, `danger`.
 - Filtros (`Chip`): activo en lima con ✓; inactivo con contorno.
 - Accesos por categoría con icono (`CategoryShortcut`), buscador en píldora (`SearchField`) y tarjetas «de papel» de Recomendados (`RecommendedCard`).

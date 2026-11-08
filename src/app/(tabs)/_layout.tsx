@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CitySwitcher } from '@/components/CitySwitcher';
 import { Icon, IconButton, type IconName } from '@/components/Icon';
 import { RuvakWordmark } from '@/components/Ruvak';
-import { colors, fonts, layout, space, states, themed, typography } from '@/lib/tokens';
+import { colors, currentScheme, layout, space, states, themed, typography } from '@/lib/tokens';
 
 /**
  * Navegación principal (lámina «Navegación inferior»): Inicio, Explorar, «+» (añadir lugar), Guardados y Mapa.
@@ -20,7 +20,7 @@ const TABS: { name: string; title: string; icon: IconName }[] = [
 ];
 
 // Navegación: Inter Medium (lámina).
-const labelStyle = { ...typography.caption, fontFamily: fonts.bodyMedium, lineHeight: 18, textAlign: 'center' as const };
+const labelStyle = { ...typography.micro, textAlign: 'center' as const };
 
 function AddButton({ wide }: { wide: boolean }) {
   return (
@@ -90,7 +90,7 @@ export default function TabsLayout() {
         tabBarActiveBackgroundColor: wide ? colors.raised : undefined,
         tabBarStyle: wide
           ? { backgroundColor: colors.surface0, borderRightColor: colors.border, width: layout.sidebarWidth, paddingTop: 16 }
-          : { backgroundColor: colors.surface0, borderTopColor: colors.border, height: 68 + insets.bottom, paddingTop: 8, paddingBottom: 8 + insets.bottom },
+          : { backgroundColor: colors.surface0, borderTopColor: colors.border, height: 74 + insets.bottom, paddingTop: 8, paddingBottom: 12 + insets.bottom },
       }}
     >
       {tab(TABS[0])}
@@ -120,6 +120,17 @@ const styles = themed(() =>
   StyleSheet.create({
     addSlot: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     addWide: { paddingHorizontal: space[3], paddingVertical: space[2] },
-    add: { width: 54, height: 54, borderRadius: 27, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', minHeight: 54 },
+    add: {
+      width: 54,
+      height: 54,
+      borderRadius: 27,
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 54,
+      // En claro el lima sobre crema no llega a 3:1 como forma: borde tinta.
+      borderWidth: currentScheme() === 'light' ? 2 : 0,
+      borderColor: colors.onPrimary,
+    },
   }),
 );

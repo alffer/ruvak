@@ -1,14 +1,14 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { Icon, type IconName } from '@/components/Icon';
+import type { IconName } from '@/components/Icon';
 import { CategoryShortcut, PlaceListItem, RecommendedCard } from '@/components/Place';
 import { RuvakEmptyState, RuvakIllustration } from '@/components/Ruvak';
-import { Card, ErrorState, H2, P, Row, Screen, SearchField, SectionHeader, SkeletonList } from '@/components/ui';
+import { ErrorState, P, Row, Screen, SearchField, SectionHeader, SkeletonList } from '@/components/ui';
 import { getDiscovery, getMyPlaces } from '@/lib/data';
 import { rankDiscovery } from '@/lib/recommend';
 import { useCategoryName, useSession } from '@/lib/session';
-import { colors, iconSize, space, typography } from '@/lib/tokens';
+import { colors, space, typography } from '@/lib/tokens';
 import { useLoad } from '@/lib/useLoad';
 
 /** Accesos rápidos de la lámina; se resuelven por el slug de la categoría de la semilla. */
@@ -48,7 +48,7 @@ export default function Home() {
     <Screen>
       {/* Portada */}
       <View style={{ minHeight: 232, justifyContent: 'center' }}>
-        <View style={{ maxWidth: '64%', gap: space[3] }}>
+        <View style={{ maxWidth: '54%', gap: space[3] }}>
           <Text style={[typography.hero, { color: colors.text }]} accessibilityRole="header" accessibilityLabel={`Descubre ${city}`}>
             Descubre {city}
             <Text aria-hidden style={{ color: colors.mark }}>
@@ -59,14 +59,14 @@ export default function Home() {
             Cafés, librerías, restaurantes, planes culturales y rincones con encanto.
           </P>
         </View>
-        <View style={{ position: 'absolute', right: -4, bottom: 0, top: 0, justifyContent: 'center', width: '46%', alignItems: 'flex-end' }}>
-          <RuvakIllustration pose="gato-perfil" height={210} />
+        <View style={{ position: 'absolute', right: -4, bottom: 0, top: 0, justifyContent: 'center', width: '44%', alignItems: 'flex-end' }}>
+          <RuvakIllustration pose="gato-perfil" height={190} />
         </View>
       </View>
 
       <SearchField value={q} onChangeText={setQ} onSubmit={search} placeholder="Busca lugares, planes o ideas…" label="Buscar lugares, planes o ideas" />
 
-      <Row gap={space[2]}>
+      <Row gap={6}>
         {SHORTCUTS.map((s) => (
           <CategoryShortcut key={s.slug} label={s.label} icon={s.icon} onPress={() => goCategory(s.slug)} />
         ))}
@@ -119,22 +119,6 @@ export default function Home() {
           ))}
         </View>
       ) : null}
-
-      <View style={{ gap: space[3] }}>
-        <H2>Planes y viajes</H2>
-        <Row gap={space[3]} wrap>
-          <Card onPress={() => router.push('/agenda')} style={{ flexGrow: 1, flexBasis: 220 }} accessibilityLabel="Agenda, próximamente">
-            <Icon name="calendar" color={colors.accentText} size={iconSize.lg} />
-            <Text style={[typography.cardTitle, { color: colors.text }]}>Agenda</Text>
-            <P muted>Eventos y planes por fecha. Próximamente.</P>
-          </Card>
-          <Card onPress={() => router.push('/viajes')} style={{ flexGrow: 1, flexBasis: 220 }} accessibilityLabel="Viajes, próximamente">
-            <Icon name="plane" color={colors.accentText} size={iconSize.lg} />
-            <Text style={[typography.cardTitle, { color: colors.text }]}>Viajes</Text>
-            <P muted>Prepara otras ciudades. Próximamente.</P>
-          </Card>
-        </Row>
-      </View>
     </Screen>
   );
 }

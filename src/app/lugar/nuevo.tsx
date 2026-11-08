@@ -111,7 +111,7 @@ export default function NewPlace() {
             onSubmitEditing={readUrl}
             error={urlError}
           />
-          <Button title="Usar este enlace" variant="secondary" icon="link" onPress={readUrl} style={{ alignSelf: 'flex-start' }} />
+          <Button title="Usar este enlace" icon="link" onPress={readUrl} style={{ alignSelf: 'flex-start' }} />
           {parsed ? (
             <Row gap={space[1]} wrap>
               <Badge label={SOURCE_TYPE_LABELS[parsed.sourceType]} tone="blue" />

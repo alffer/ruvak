@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { DiscoveryCard } from '@/components/Place';
 import { RuvakEmptyState, RuvakIllustration } from '@/components/Ruvak';
-import { Chip, ChipRow, ErrorState, H1, InlineNotice, LinkButton, Row, Screen, SearchField, SkeletonList } from '@/components/ui';
+import { Card, Chip, ChipRow, ErrorState, H1, InlineNotice, LinkButton, Row, Screen, SearchField, SkeletonList } from '@/components/ui';
 import { getDiscovery, getMyPlaces, hideDiscovery, savePlace, unhideAllDiscovery } from '@/lib/data';
 import { nameKey } from '@/lib/dedupe';
 import { rankDiscovery, reasonFor } from '@/lib/recommend';
@@ -42,6 +42,7 @@ export default function Discover() {
   const categoryId = params.cat ? Number(params.cat) || null : null;
   const setCategoryId = (id: number | null) => router.setParams({ cat: id == null ? '' : String(id) });
   const [zone, setZone] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const savedIds = useMemo(() => new Set((saved.data ?? []).map((p) => p.id)), [saved.data]);
@@ -50,6 +51,11 @@ export default function Discover() {
   const zones = [...new Set(ranked.map((i) => i.place?.zone).filter((z): z is string => !!z))].sort();
   const usedCats = categories.filter((c) => ranked.some((i) => i.place?.categoryId === c.id));
   const kinds = KIND_FILTERS.find((k) => k.key === kind)!.kinds;
+  const activeFilters = (categoryId != null ? 1 : 0) + (zone ? 1 : 0);
+  const clearFilters = () => {
+    setCategoryId(null);
+    setZone(null);
+  };
   const visible = ranked.filter(
     (i) =>
       (!kinds.length || kinds.includes(i.kind)) &&
@@ -74,7 +80,7 @@ export default function Discover() {
       <Row gap={space[3]} style={{ alignItems: 'flex-end' }}>
         <View style={{ flex: 1, gap: space[1] }}>
           <H1>Explorar</H1>
-          <Text style={[typography.subtitle, { color: colors.textSecondary }]}>He encontrado algunas pistas por {activeCity?.name ?? 'tu ciudad'}.</Text>
+          <Text style={[typography.subtitle, { color: colors.textSecondary }]}>Aquí tienes algunas pistas por {activeCity?.name ?? 'tu ciudad'}.</Text>
         </View>
         <RuvakIllustration pose="gato-mirada" height={96} />
       </Row>
@@ -85,24 +91,43 @@ export default function Discover() {
       <View style={{ gap: space[1] }}>
         <ChipRow>
           {KIND_FILTERS.map((k) => (
-            <Chip key={k.key} label={k.label} selected={kind === k.key} onPress={() => setKind(k.key)} />
+            <Chip key={k.key} label={k.label} selected={kind === k.key} quiet={k.key === 'all'} onPress={() => setKind(k.key)} />
           ))}
         </ChipRow>
-        {usedCats.length > 1 ? (
-          <ChipRow>
-            <Chip label="Todas las categorías" selected={categoryId == null} onPress={() => setCategoryId(null)} />
-            {usedCats.map((c) => (
-              <Chip key={c.id} label={c.name} selected={categoryId === c.id} onPress={() => setCategoryId(categoryId === c.id ? null : c.id)} />
-            ))}
-          </ChipRow>
+        {usedCats.length > 1 || zones.length > 1 ? (
+          <Row gap={space[2]} wrap>
+            <Chip
+              label={activeFilters ? `Filtros (${activeFilters})` : 'Filtros'}
+              icon="filters"
+              selected={activeFilters > 0}
+              onPress={() => setShowFilters(!showFilters)}
+            />
+            {activeFilters ? <LinkButton label="Quitar filtros" onPress={clearFilters} /> : null}
+          </Row>
         ) : null}
-        {zones.length > 1 ? (
-          <ChipRow>
-            <Chip label="Todas las zonas" selected={zone == null} onPress={() => setZone(null)} />
-            {zones.map((z) => (
-              <Chip key={z} label={z} selected={zone === z} onPress={() => setZone(zone === z ? null : z)} icon="pin" />
-            ))}
-          </ChipRow>
+        {showFilters ? (
+          <Card>
+            {usedCats.length > 1 ? (
+              <>
+                <Text style={[typography.label, { color: colors.text }]}>Categoría</Text>
+                <Row wrap>
+                  {usedCats.map((c) => (
+                    <Chip key={c.id} label={c.name} selected={categoryId === c.id} onPress={() => setCategoryId(categoryId === c.id ? null : c.id)} />
+                  ))}
+                </Row>
+              </>
+            ) : null}
+            {zones.length > 1 ? (
+              <>
+                <Text style={[typography.label, { color: colors.text }]}>Zona</Text>
+                <Row wrap>
+                  {zones.map((z) => (
+                    <Chip key={z} label={z} icon="pin" selected={zone === z} onPress={() => setZone(zone === z ? null : z)} />
+                  ))}
+                </Row>
+              </>
+            ) : null}
+          </Card>
         ) : null}
       </View>
 

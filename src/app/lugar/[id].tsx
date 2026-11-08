@@ -4,7 +4,24 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Icon, IconButton, type IconName } from '@/components/Icon';
 import { SourceLine } from '@/components/Place';
-import { Badge, Button, Card, Chip, confirmAction, ErrorState, Field, H1, H2, InlineNotice, Loading, Overline, P, Row, Screen } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  Chip,
+  confirmAction,
+  ErrorState,
+  Field,
+  H1,
+  H2,
+  InlineNotice,
+  LinkButton,
+  Loading,
+  Overline,
+  P,
+  Row,
+  Screen,
+} from '@/components/ui';
 import { createCollection, getCollections, getPlace, savePlace, setPlaceArchived, setPlaceCollections, unsavePlace, updateUserPlace } from '@/lib/data';
 import { formatDate, hostOf, mapsUrl, openExternal } from '@/lib/format';
 import { useCategoryName, useSession } from '@/lib/session';
@@ -12,11 +29,10 @@ import { colors, iconSize, radii, space, states, themed, touchTarget, typography
 import { SOURCE_TYPE_LABELS, VISIT_STATUS_LABELS, type VisitStatus } from '@/lib/types';
 import { useLoad } from '@/lib/useLoad';
 
-const STATUSES: { key: VisitStatus | null; label: string; icon: IconName }[] = [
+const STATUSES: { key: VisitStatus; label: string; icon: IconName }[] = [
   { key: 'pending', label: VISIT_STATUS_LABELS.pending, icon: 'pending' },
   { key: 'visited', label: VISIT_STATUS_LABELS.visited, icon: 'check-circle' },
   { key: 'discarded', label: VISIT_STATUS_LABELS.discarded, icon: 'ban' },
-  { key: null, label: 'Sin estado', icon: 'x' },
 ];
 
 /** Ficha de lugar (RF-08): datos que existan, acciones personales, fuente y fecha. Nada inventado. */
@@ -28,6 +44,7 @@ export default function PlaceScreen() {
   const detail = useLoad(() => getPlace(placeId), [placeId]);
   const lists = useLoad(getCollections, []);
   const [newList, setNewList] = useState('');
+  const [showNewList, setShowNewList] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const d = detail.data;
@@ -106,6 +123,7 @@ export default function PlaceScreen() {
         <Overline color={colors.accentText}>{[cat, place.zone].filter(Boolean).join(' · ') || 'Lugar'}</Overline>
         <Row gap={space[2]} style={{ alignItems: 'flex-start' }}>
           <H1 style={{ flex: 1 }}>{place.name}</H1>
+          {canEdit ? <IconButton name="pencil" label="Editar lugar" onPress={() => router.push(`/lugar/editar/${place.id}`)} /> : null}
           <IconButton
             name="heart"
             label={me?.favorite ? 'Quitar de favoritos' : 'Marcar como favorito'}
@@ -134,18 +152,18 @@ export default function PlaceScreen() {
           onPress={() => openExternal(mapsUrl(place))}
           accessibilityHint="Para cómo llegar, horarios y reseñas"
         />
-        {canEdit ? <Button title="Editar" icon="pencil" variant="secondary" onPress={() => router.push(`/lugar/editar/${place.id}`)} /> : null}
       </Row>
 
       <Card>
         <H2>Tu estado</H2>
         <View style={styles.statusRow} accessibilityRole="radiogroup" accessibilityLabel="Estado de visita">
           {STATUSES.map((s) => {
-            const sel = (me?.status ?? null) === s.key && (saved || s.key !== null);
+            const sel = me?.status === s.key;
             return (
               <Pressable
-                key={String(s.key)}
-                onPress={() => act(() => updateUserPlace(place.id, { status: s.key }))}
+                key={s.key}
+                // Volver a pulsar el estado activo lo quita (no hace falta un botón «Sin estado»).
+                onPress={() => act(() => updateUserPlace(place.id, { status: sel ? null : s.key }))}
                 accessibilityRole="radio"
                 accessibilityState={{ checked: sel }}
                 style={({ pressed }) => [styles.statusBtn, sel && styles.statusSel, { opacity: pressed ? states.pressedOpacity : 1 }]}
@@ -157,7 +175,7 @@ export default function PlaceScreen() {
           })}
         </View>
         {me?.visitedAt ? <P muted style={{ fontSize: 14 }}>{`Visitado el ${formatDate(me.visitedAt)}`}</P> : null}
-        {me ? <P muted style={{ fontSize: 13 }}>{`Guardado el ${formatDate(me.savedAt)}`}</P> : null}
+        {me ? <P muted style={{ fontSize: 14 }}>{`Guardado el ${formatDate(me.savedAt)}`}</P> : null}
       </Card>
 
       <Card>
@@ -172,12 +190,16 @@ export default function PlaceScreen() {
             Todavía no tienes listas propias.
           </P>
         ) : null}
-        <Row gap={space[2]} style={{ alignItems: 'flex-end' }}>
-          <View style={{ flex: 1 }}>
-            <Field label="Nueva lista" placeholder="Ej.: Para ir con amigos" value={newList} onChangeText={setNewList} onSubmitEditing={addList} />
-          </View>
-          <Button title="Crear" variant="secondary" onPress={addList} />
-        </Row>
+        {showNewList ? (
+          <Row gap={space[2]} style={{ alignItems: 'flex-end' }}>
+            <View style={{ flex: 1 }}>
+              <Field label="Nueva lista" placeholder="Ej.: Para ir con amigos" value={newList} onChangeText={setNewList} onSubmitEditing={addList} />
+            </View>
+            <Button title="Crear" variant="secondary" onPress={addList} />
+          </Row>
+        ) : (
+          <LinkButton label="+ Nueva lista" onPress={() => setShowNewList(true)} />
+        )}
       </Card>
 
       {/* Nota privada, separada visualmente de la descripción editorial (§11 Ficha). key: se reinicia al cambiar lo guardado. */}
@@ -201,7 +223,7 @@ export default function PlaceScreen() {
         />
         {/* Sin datos autorizados de horarios ni reseñas: se enlaza, no se inventa (§8). */}
         <InlineNotice>Horarios y reseñas pueden cambiar: consúltalos en Google Maps antes de ir.</InlineNotice>
-        <P muted style={{ fontSize: 13 }}>{`Ficha actualizada el ${formatDate(place.updatedAt)}`}</P>
+        <P muted style={{ fontSize: 14 }}>{`Ficha actualizada el ${formatDate(place.updatedAt)}`}</P>
       </Card>
 
       <Card>

@@ -1,16 +1,17 @@
 // Selector de ciudad siempre visible (§4): ciudad activa, si es habitual o explorada, cambiar
 // y (próximamente) crear un viaje. Cambiar de ciudad no altera la colección global.
-import { router } from 'expo-router';
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSession } from '@/lib/session';
 import { colors, elevation, iconSize, radii, space, states, themed, touchTarget, typography } from '@/lib/tokens';
 import { Icon } from './Icon';
-import { Badge, Button, H2, P } from './ui';
+import { Badge, H2, P } from './ui';
 
 export function CitySwitcher() {
   const { activeCity, isHomeCity, cities, setActiveCityId, profile } = useSession();
   const [open, setOpen] = useState(false);
+  // En móvil estrecho solo el nombre: «Habitual» queda en la hoja y en la etiqueta accesible.
+  const compact = useWindowDimensions().width < 480;
   if (!activeCity) return null;
   const kind = isHomeCity ? 'Habitual' : 'Explorando';
   return (
@@ -23,7 +24,7 @@ export function CitySwitcher() {
       >
         <Icon name="pin" size={iconSize.sm} color={colors.accentText} />
         <Text style={[typography.label, { color: colors.text }]}>{activeCity.name}</Text>
-        <Text style={[typography.caption, { color: colors.textSecondary }]}>{kind}</Text>
+        {compact ? null : <Text style={[typography.caption, { color: colors.textSecondary }]}>{kind}</Text>}
         <Icon name="chevron-down" size={iconSize.sm} color={colors.textSecondary} />
       </Pressable>
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
@@ -50,17 +51,8 @@ export function CitySwitcher() {
             );
           })}
           <P muted style={{ fontSize: 14 }}>
-            Añadir ciudades y crear viajes llegará en la próxima fase.
+            Más ciudades y los viajes llegarán en una próxima versión.
           </P>
-          <Button
-            title="Ver viajes"
-            icon="plane"
-            variant="secondary"
-            onPress={() => {
-              setOpen(false);
-              router.push('/viajes');
-            }}
-          />
         </View>
       </Modal>
     </>

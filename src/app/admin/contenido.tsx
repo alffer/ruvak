@@ -135,7 +135,7 @@ function ContentForm({ itemId, initial }: { itemId: number | null; initial: Disc
                 <Chip key={p.id} label={p.name} selected={false} onPress={() => set({ placeId: p.id })} />
               ))}
             </Row>
-            <P muted style={{ fontSize: 13 }}>
+            <P muted style={{ fontSize: 14 }}>
               Si no existe, créala antes en «Nueva ficha editorial».
             </P>
           </>

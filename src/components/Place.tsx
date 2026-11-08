@@ -178,7 +178,7 @@ const styles = themed(() =>
       borderBottomColor: colors.accentText,
     },
     smallBtn: {
-      minHeight: touchTarget - 4,
+      minHeight: touchTarget,
       flexDirection: 'row',
       alignItems: 'center',
       gap: space[1],
@@ -200,7 +200,7 @@ export function CategoryShortcut({ label, icon, onPress }: { label: string; icon
       style={({ pressed }) => [shortcut.box, { opacity: pressed ? states.pressedOpacity : 1 }]}
     >
       <Icon name={icon} size={iconSize.lg} color={colors.text} />
-      <Text style={[typography.caption, { color: colors.text, fontSize: 12 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+      <Text style={[typography.micro, { color: colors.text, letterSpacing: -0.3 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
         {label}
       </Text>
     </Pressable>
@@ -212,12 +212,13 @@ export function CategoryShortcut({ label, icon, onPress }: { label: string; icon
  * Sin foto autorizada no se inventa una: portada tinta con la categoría y la zona. Sin valoraciones (no hay datos).
  */
 export function RecommendedCard({ item, categoryName, onPress }: { item: DiscoveryItem; categoryName: string | null; onPress: () => void }) {
-  const where = [item.place?.zone, categoryName].filter(Boolean).join(' · ');
+  // La categoría ya está en la portada: abajo solo la zona (así no se trunca ni se repite).
+  const where = item.place?.zone ?? '';
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="link"
-      accessibilityLabel={[item.title, where, VERIFICATION_LABELS[item.verification]].filter(Boolean).join('. ')}
+      accessibilityLabel={[item.title, categoryName, where, VERIFICATION_LABELS[item.verification]].filter(Boolean).join('. ')}
       style={({ pressed }) => [recCard.card, { opacity: pressed ? states.pressedOpacity : 1 }]}
     >
       <View style={recCard.cover}>
@@ -254,7 +255,7 @@ const shortcut = themed(() =>
       alignItems: 'center',
       justifyContent: 'center',
       gap: space[1],
-      paddingHorizontal: 2,
+      paddingHorizontal: 0,
       borderRadius: radii.lg,
       borderWidth: 1,
       borderColor: colors.outline,
@@ -266,7 +267,7 @@ const shortcut = themed(() =>
 const recCard = themed(() =>
   StyleSheet.create({
     card: { width: 232, borderRadius: radii.lg, overflow: 'hidden', backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.border },
-    cover: { height: 92, padding: space[3], justifyContent: 'space-between', backgroundColor: brand.ink },
+    cover: { height: 72, padding: space[3], justifyContent: 'space-between', backgroundColor: brand.ink },
     stripe: { height: 4, width: 48, borderRadius: 2, backgroundColor: brand.lime },
   }),
 );

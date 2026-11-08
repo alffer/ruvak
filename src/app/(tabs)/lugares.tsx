@@ -17,6 +17,7 @@ import {
   P,
   Row,
   Screen,
+  SearchField,
   Segmented,
   SkeletonList,
   ToggleRow,
@@ -96,10 +97,8 @@ export default function MyPlaces() {
             { value: 'lists', label: 'Listas', icon: 'list' },
           ]}
         />
-        <Row gap={space[2]}>
-          <Button title="Importar" icon="upload" variant="secondary" onPress={() => router.push('/importar')} />
-          <Button title="Añadir" icon="plus" onPress={() => router.push('/lugar/nuevo')} />
-        </Row>
+        {/* Importar es una tarea de una vez: discreta. Añadir lo cubre el «+» de la barra. */}
+        <Button title="Importar" icon="upload" variant="ghost" onPress={() => router.push('/importar')} />
       </Row>
 
       {places.error ? <ErrorState message={places.error} onRetry={places.reload} /> : null}
@@ -107,37 +106,28 @@ export default function MyPlaces() {
       {tab === 'places' ? (
         <>
           <View style={{ gap: space[2] }}>
-            <Field
-              label="Buscar en mis lugares"
-              placeholder="Nombre, categoría, zona o nota"
-              value={f.q}
-              onChangeText={(q) => set({ q })}
-              returnKeyType="search"
-              autoCorrect={false}
-              clearButtonMode="while-editing"
-            />
+            <SearchField label="Buscar en mis lugares" placeholder="Nombre, categoría, zona o nota" value={f.q} onChangeText={(q) => set({ q })} />
             <ChipRow>
               {STATUS.map((s) => (
-                <Chip key={s.key} label={s.label} selected={f.status === s.key} onPress={() => set({ status: s.key })} />
+                <Chip key={s.key} label={s.label} selected={f.status === s.key} quiet={s.key === 'all'} onPress={() => set({ status: s.key })} />
               ))}
             </ChipRow>
-            <Row gap={space[2]} wrap style={{ justifyContent: 'space-between' }}>
-              <LinkButton
-                label={showFilters ? 'Ocultar filtros' : active ? `Más filtros (${active} activos)` : 'Más filtros'}
-                onPress={() => setShowFilters(!showFilters)}
-              />
-              <Segmented
-                label="Ordenar"
-                value={sort}
-                onChange={setSort}
-                options={[
-                  { value: 'recent', label: 'Recientes' },
-                  { value: 'name', label: 'Nombre' },
-                ]}
-              />
-            </Row>
+            <LinkButton
+              label={showFilters ? 'Ocultar filtros y orden' : active ? `Más filtros y orden (${active} activos)` : 'Más filtros y orden'}
+              onPress={() => setShowFilters(!showFilters)}
+            />
             {showFilters ? (
               <Card>
+                <Text style={[typography.label, { color: colors.text }]}>Ordenar por</Text>
+                <Segmented
+                  label="Ordenar"
+                  value={sort}
+                  onChange={setSort}
+                  options={[
+                    { value: 'recent', label: 'Recientes' },
+                    { value: 'name', label: 'Nombre' },
+                  ]}
+                />
                 <Text style={[typography.label, { color: colors.text }]}>Categoría</Text>
                 <Row wrap>
                   {categories.map((c) => (
@@ -210,7 +200,7 @@ export default function MyPlaces() {
               error={listError}
             />
             <Button title="Crear lista" icon="plus" variant="secondary" onPress={addList} style={{ alignSelf: 'flex-start' }} />
-            <P muted style={{ fontSize: 13 }}>
+            <P muted style={{ fontSize: 14 }}>
               Las listas son privadas: solo las ves tú.
             </P>
           </Card>

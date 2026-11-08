@@ -196,21 +196,38 @@ export function Button({ title, onPress, variant = 'primary', icon, disabled, lo
   );
 }
 
+/** Enlace de texto: subrayado (no depende solo del color) y con zona táctil de 48 px. */
 export function LinkButton({ label, onPress }: { label: string; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
-      accessibilityRole="button"
-      hitSlop={12}
-      style={({ pressed }) => ({ opacity: pressed ? states.pressedOpacity : 1, paddingVertical: space[2] })}
+      accessibilityRole="link"
+      hitSlop={8}
+      style={({ pressed }) => ({ opacity: pressed ? states.pressedOpacity : 1, minHeight: touchTarget, justifyContent: 'center' })}
     >
-      <Text style={[typography.label, { color: colors.accentText }]}>{label}</Text>
+      <Text style={[typography.label, { color: colors.accentText, textDecorationLine: 'underline' }]}>{label}</Text>
     </Pressable>
   );
 }
 
-export function Chip({ label, selected, onPress, icon, count }: { label: string; selected: boolean; onPress: () => void; icon?: IconName; count?: number }) {
-  const fg = selected ? colors.onPrimary : colors.text;
+/** `quiet`: opción por defecto («Todo»): al estar seleccionada no se pinta en lima (el lima es para filtros realmente activos). */
+export function Chip({
+  label,
+  selected,
+  onPress,
+  icon,
+  count,
+  quiet,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+  icon?: IconName;
+  count?: number;
+  quiet?: boolean;
+}) {
+  const lime = selected && !quiet;
+  const fg = lime ? colors.onPrimary : colors.text;
   return (
     <Pressable
       onPress={onPress}
@@ -221,8 +238,8 @@ export function Chip({ label, selected, onPress, icon, count }: { label: string;
       style={({ pressed }) => [
         styles.chip,
         {
-          backgroundColor: selected ? colors.primary : colors.raised,
-          borderColor: selected ? colors.primary : colors.outline,
+          backgroundColor: lime ? colors.primary : colors.raised,
+          borderColor: lime ? colors.primary : selected ? colors.text : colors.outline,
           opacity: pressed ? states.pressedOpacity : 1,
         },
       ]}
@@ -230,7 +247,7 @@ export function Chip({ label, selected, onPress, icon, count }: { label: string;
       {/* Seleccionado se marca con ✓ además del color (§6: nunca solo color). */}
       {selected ? <Icon name="check" size={iconSize.sm} color={fg} /> : icon ? <Icon name={icon} size={iconSize.sm} color={fg} /> : null}
       <Text style={[typography.label, { color: fg }]}>{label}</Text>
-      {count !== undefined ? <Text style={[typography.caption, { color: selected ? colors.onPrimary : colors.textSecondary }]}>{count}</Text> : null}
+      {count !== undefined ? <Text style={[typography.caption, { color: lime ? colors.onPrimary : colors.textSecondary }]}>{count}</Text> : null}
     </Pressable>
   );
 }
@@ -385,7 +402,7 @@ export type BadgeTone = 'neutral' | 'news' | 'lime' | 'blue' | 'warning' | 'dang
 export function Badge({ label, tone = 'neutral', icon }: { label: string; tone?: BadgeTone; icon?: IconName }) {
   const t = {
     neutral: { bg: colors.raised, fg: colors.text, border: colors.outline },
-    news: { bg: colors.news, fg: colors.onNews, border: colors.news },
+    news: { bg: colors.newsFill, fg: colors.onNews, border: colors.newsFill },
     lime: { bg: colors.primary, fg: colors.onPrimary, border: colors.primary },
     blue: { bg: 'transparent', fg: colors.accentText, border: colors.accentText },
     warning: { bg: 'transparent', fg: colors.newsText, border: colors.newsText },
@@ -403,7 +420,11 @@ export function InlineNotice({ children, tone = 'info', icon }: { children: Reac
   const c = { info: colors.accentText, warning: colors.newsText, error: colors.danger, success: colors.success }[tone];
   const i: IconName = icon ?? (tone === 'error' || tone === 'warning' ? 'alert' : tone === 'success' ? 'check-circle' : 'info');
   return (
-    <View style={[styles.notice, { borderColor: c }]} accessibilityRole={tone === 'error' ? 'alert' : undefined} accessibilityLiveRegion="polite">
+    <View
+      style={[styles.notice, { borderColor: tone === 'info' ? colors.outline : c }]}
+      accessibilityRole={tone === 'error' ? 'alert' : undefined}
+      accessibilityLiveRegion="polite"
+    >
       <Icon name={i} color={c} size={iconSize.md} />
       <Text style={[typography.body, { color: colors.text, flex: 1 }]}>{children}</Text>
     </View>
@@ -471,15 +492,14 @@ const styles = themed(() =>
     buttonRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2] },
     buttonText: { fontFamily: fonts.bodyMedium, fontSize: 16 },
     chip: {
-      minHeight: 40,
+      minHeight: touchTarget,
       flexDirection: 'row',
       alignItems: 'center',
       gap: space[1] + 2,
       paddingHorizontal: space[3] + 2,
       borderRadius: radii.pill,
       borderWidth: 1,
-      // 40 visibles + margen táctil: el objetivo efectivo sigue siendo ≥ 44 px por hitSlop del ScrollView.
-      marginVertical: 4,
+      marginVertical: 2,
     },
     input: {
       minHeight: touchTarget,
@@ -519,7 +539,7 @@ const styles = themed(() =>
       flexDirection: 'row',
       alignItems: 'center',
       gap: space[1],
-      minHeight: 42,
+      minHeight: touchTarget,
       paddingHorizontal: space[3],
       borderRadius: radii.xs + 2,
       borderWidth: 1,
