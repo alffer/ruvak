@@ -1,0 +1,12 @@
+node_modules
+android
+ios
+.expo
+.eas
+dist
+web-build
+privado
+assets
+docs/capturas
+package-lock.json
+changelog.json
