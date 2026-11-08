@@ -71,6 +71,7 @@ docs/                   esta documentación
 ## Puntos delicados
 
 - **WebView**: sus tipos colapsan a `never` con esta versión de RN; `MapCanvas.tsx` lo tipa con las props de Android (como Sandow).
+- **Pestañas ocultas**: no usar `href: null` para esconder una pestaña a la que se navega por código (el Perfil en móvil): en Expo Router 58 la marca como oculta y navegar a ella redirige a Inicio. Se oculta con `tabBarItemStyle: { display: 'none' }`. `scripts/capture-screens.mjs` incluye una prueba de humo que pulsa el botón de perfil.
 - **TypeScript 6** ya no incluye `@types/node` por defecto: los scripts llevan `/// <reference types="node" />`.
 - **React Compiler (lint)**: los formularios que parten de datos cargados se montan con `key` y estado inicial
   (sin copiar en `useEffect`).

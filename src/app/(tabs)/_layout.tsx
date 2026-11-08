@@ -102,8 +102,9 @@ export default function TabsLayout() {
         name="perfil"
         options={{
           title: 'Perfil',
-          // Móvil: en la cabecera. Escritorio: también en la barra lateral.
-          ...(wide ? {} : { href: null }),
+          // Móvil: acceso desde la cabecera, sin hueco en la barra. NO usar `href: null`: en esta versión de
+          // Expo Router oculta la pestaña y navegar a ella redirige a Inicio. Escritorio: también en la barra lateral.
+          ...(wide ? {} : { tabBarItemStyle: { display: 'none' as const } }),
           tabBarLabel: ({ color }) => (
             <Text numberOfLines={1} style={[labelStyle, { color: String(color) }, { fontSize: 15, textAlign: 'left', marginLeft: 12 }]}>
               Perfil

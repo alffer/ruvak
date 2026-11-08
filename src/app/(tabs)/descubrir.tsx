@@ -90,21 +90,18 @@ export default function Discover() {
 
       <View style={{ gap: space[1] }}>
         <ChipRow>
-          {KIND_FILTERS.map((k) => (
-            <Chip key={k.key} label={k.label} selected={kind === k.key} quiet={k.key === 'all'} onPress={() => setKind(k.key)} />
-          ))}
-        </ChipRow>
-        {usedCats.length > 1 || zones.length > 1 ? (
-          <Row gap={space[2]} wrap>
+          {usedCats.length > 1 || zones.length > 1 ? (
             <Chip
               label={activeFilters ? `Filtros (${activeFilters})` : 'Filtros'}
               icon="filters"
               selected={activeFilters > 0}
               onPress={() => setShowFilters(!showFilters)}
             />
-            {activeFilters ? <LinkButton label="Quitar filtros" onPress={clearFilters} /> : null}
-          </Row>
-        ) : null}
+          ) : null}
+          {KIND_FILTERS.map((k) => (
+            <Chip key={k.key} label={k.label} selected={kind === k.key} quiet={k.key === 'all'} onPress={() => setKind(k.key)} />
+          ))}
+        </ChipRow>
         {showFilters ? (
           <Card>
             {usedCats.length > 1 ? (
@@ -127,6 +124,7 @@ export default function Discover() {
                 </Row>
               </>
             ) : null}
+            {activeFilters ? <LinkButton label="Quitar filtros" onPress={clearFilters} /> : null}
           </Card>
         ) : null}
       </View>

@@ -19,5 +19,6 @@
 | 2026-11-07 | Mascota con las ilustraciones de la usuaria (WebP con alfa) e iconos generados desde la cabeza del gato | Identidad real; los originales se conservan intactos y los derivados se regeneran con `prepare-ruvak.mjs` |
 | 2026-11-08 | Revisión UX por un agente experto antes de presentar cualquier cambio visual (norma en `CLAUDE.md`) | Petición de la usuaria; la primera pasada encontró contraste AAA incumplido en claro, objetivos táctiles de 40–42 px y exceso de controles |
 | 2026-11-08 | Tema claro con acento azul `#173A94` y textos más oscuros; etiqueta naranja con relleno `#FA8C63` | Cumplir AAA (7:1) en todo el texto; el azul/naranja de la lámina daban 5,3–5,4:1 |
+| 2026-11-08 | Perfil en móvil oculto de la barra con `tabBarItemStyle`, no con `href: null` | `href: null` hace que navegar a la ruta redirija a Inicio: el botón de perfil de la cabecera no funcionaba (lo detectó la revisión UX) |
 | 2026-11-08 | Agenda y Viajes sin accesos visibles hasta que existan | Llevaban a páginas vacías (confunde); las rutas siguen creadas |
 | 2026-11-08 | Reparto tipográfico de la usuaria: Space Grotesk 600/500, Inter 400/500; wordmark propio | Pesos concretos por uso; el wordmark se compone provisionalmente hasta tener el archivo |

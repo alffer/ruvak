@@ -270,6 +270,14 @@ for (const [vpName, viewport, theme] of VIEWPORTS) {
     }
     await page.screenshot({ path: join(OUT, `${name}-${vpName}.png`), fullPage: false });
   }
+  if (vpName === 'movil') {
+    // Prueba de humo: en móvil el botón de perfil de la cabecera tiene que llevar al Perfil (y no redirigir a Inicio).
+    await page.goto('http://localhost:8087/', { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: 'Perfil y ajustes' }).click();
+    await page.waitForTimeout(600);
+    const ok = page.url().endsWith('/perfil') && (await page.getByText('Apariencia').count()) > 0;
+    if (!ok) problems.push(`movil: el botón de perfil no lleva al Perfil (url: ${page.url()})`);
+  }
   await ctx.close();
 }
 await browser.close();

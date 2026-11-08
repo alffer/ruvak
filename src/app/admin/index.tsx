@@ -40,7 +40,8 @@ export default function Admin() {
             <Row gap={space[1]} wrap>
               <KindBadge kind={i.kind} />
               <VerificationBadge v={i.verification} />
-              {i.published ? <Badge label="Publicado" tone="blue" icon="check" /> : <Badge label="Borrador" icon="pencil" />}
+              {/* Solo se señala lo que NO está publicado (lo normal no necesita etiqueta). */}
+              {i.published ? null : <Badge label="Borrador" icon="pencil" />}
             </Row>
             <Text style={[typography.cardTitle, { color: colors.text }]}>{i.title}</Text>
             <P muted style={{ fontSize: 14 }}>

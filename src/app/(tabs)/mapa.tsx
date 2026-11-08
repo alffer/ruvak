@@ -7,7 +7,6 @@ import { PlaceListItem, PlaceStatusBadge } from '@/components/Place';
 import { Badge, Button, Card, Chip, ChipRow, ErrorState, Loading, P, Row, Segmented } from '@/components/ui';
 import { getCollections, getDiscovery, getMyPlaces } from '@/lib/data';
 import { EMPTY_FILTERS, filterPlaces, type StatusFilter } from '@/lib/filters';
-import { plural } from '@/lib/format';
 import { useCategoryName, useSession } from '@/lib/session';
 import { colors, elevation, layout, radii, space, themed, typography } from '@/lib/tokens';
 import { useLoad } from '@/lib/useLoad';
@@ -87,18 +86,18 @@ export default function MapScreen() {
               { value: 'list', label: 'Lista', icon: 'list' },
             ]}
           />
-          <MapLegend />
-        </Row>
-        <ChipRow>
-          {/* Capas del mapa: activadas por defecto, por eso en tono neutro (el lima es para filtros activos). */}
-          <Chip label="Mis lugares" selected={showSaved} quiet onPress={() => setShowSaved(!showSaved)} />
-          <Chip label="Recomendaciones" selected={showDiscovery} quiet onPress={() => setShowDiscovery(!showDiscovery)} />
           <Chip
             label={activeFilters ? `Filtros (${activeFilters})` : 'Filtros'}
             icon="filters"
             selected={activeFilters > 0}
             onPress={() => setShowFilters(!showFilters)}
           />
+        </Row>
+        <MapLegend />
+        <ChipRow>
+          {/* Capas del mapa: activadas por defecto, por eso en tono neutro (el lima es para filtros activos). */}
+          <Chip label="Mis lugares" selected={showSaved} quiet onPress={() => setShowSaved(!showSaved)} />
+          <Chip label="Recomendaciones" selected={showDiscovery} quiet onPress={() => setShowDiscovery(!showDiscovery)} />
         </ChipRow>
         {showFilters ? (
           <Card>
@@ -132,12 +131,7 @@ export default function MapScreen() {
             ) : null}
           </Card>
         ) : null}
-        {withoutCoords > 0 ? (
-          <P
-            muted
-            style={{ fontSize: 14 }}
-          >{`${plural(withoutCoords, 'lugar', 'lugares')} sin ubicación no ${withoutCoords === 1 ? 'aparece' : 'aparecen'} en el mapa (sí en la lista).`}</P>
-        ) : null}
+        {withoutCoords > 0 ? <P muted style={{ fontSize: 14 }}>{`${withoutCoords} sin ubicación (solo en Lista)`}</P> : null}
       </View>
 
       {places.error ? (
@@ -214,7 +208,7 @@ const styles = themed(() =>
       position: 'absolute',
       left: space[3],
       right: space[3],
-      bottom: space[3],
+      bottom: space[3] + 24,
       maxWidth: 520,
       alignSelf: 'center',
       backgroundColor: colors.card,
