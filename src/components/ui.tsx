@@ -16,7 +16,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
-import { colors, fonts, iconSize, layout, radii, space, states, touchTarget, typography } from '@/lib/tokens';
+import { colors, fonts, iconSize, layout, radii, space, states, themed, touchTarget, typography } from '@/lib/tokens';
 import { Icon, type IconName } from './Icon';
 
 // ---------------------------------------------------------------------------------------------
@@ -34,18 +34,39 @@ export function Screen({ children, scroll = true, contentStyle }: { children: Re
   );
 }
 
-export function H1({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
+/** Guion bajo lima de la marca («Descubre Gijón_»). Decorativo: el lector de pantalla lo ignora. */
+function Mark() {
   return (
-    <Text style={[typography.title, { color: colors.text }, style]} accessibilityRole="header" aria-level={1}>
-      {children}
+    <Text aria-hidden accessibilityElementsHidden importantForAccessibility="no" style={{ color: colors.mark }}>
+      _
     </Text>
   );
 }
 
-export function H2({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
+export function H1({ children, style, mark = true }: { children: ReactNode; style?: StyleProp<TextStyle>; mark?: boolean }) {
   return (
-    <Text style={[typography.section, { color: colors.text }, style]} accessibilityRole="header" aria-level={2}>
+    <Text
+      style={[typography.title, { color: colors.text }, style]}
+      accessibilityRole="header"
+      accessibilityLabel={typeof children === 'string' ? children : undefined}
+      aria-level={1}
+    >
       {children}
+      {mark ? <Mark /> : null}
+    </Text>
+  );
+}
+
+export function H2({ children, style, mark = true }: { children: ReactNode; style?: StyleProp<TextStyle>; mark?: boolean }) {
+  return (
+    <Text
+      style={[typography.section, { color: colors.text }, style]}
+      accessibilityRole="header"
+      accessibilityLabel={typeof children === 'string' ? children : undefined}
+      aria-level={2}
+    >
+      {children}
+      {mark ? <Mark /> : null}
     </Text>
   );
 }
@@ -127,7 +148,8 @@ export function Row({
 type ButtonProps = {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  /** primary = lima (acción principal); solid = neutro sólido («Guardar»); secondary = contorno. */
+  variant?: 'primary' | 'solid' | 'secondary' | 'ghost' | 'danger';
   icon?: IconName;
   disabled?: boolean;
   loading?: boolean;
@@ -137,8 +159,17 @@ type ButtonProps = {
 
 export function Button({ title, onPress, variant = 'primary', icon, disabled, loading, style, accessibilityHint }: ButtonProps) {
   const off = disabled || loading;
-  const bg = variant === 'primary' ? colors.primary : variant === 'secondary' ? colors.raised : 'transparent';
-  const fg = variant === 'primary' ? colors.onPrimary : variant === 'danger' ? colors.danger : variant === 'ghost' ? colors.blueText : colors.text;
+  const bg = variant === 'primary' ? colors.primary : variant === 'solid' ? colors.solid : 'transparent';
+  const fg =
+    variant === 'primary'
+      ? colors.onPrimary
+      : variant === 'solid'
+        ? colors.onSolid
+        : variant === 'danger'
+          ? colors.danger
+          : variant === 'ghost'
+            ? colors.accentText
+            : colors.text;
   const border = variant === 'secondary' ? colors.outline : variant === 'danger' ? colors.danger : 'transparent';
   return (
     <Pressable
@@ -173,7 +204,7 @@ export function LinkButton({ label, onPress }: { label: string; onPress: () => v
       hitSlop={12}
       style={({ pressed }) => ({ opacity: pressed ? states.pressedOpacity : 1, paddingVertical: space[2] })}
     >
-      <Text style={[typography.label, { color: colors.blueText }]}>{label}</Text>
+      <Text style={[typography.label, { color: colors.accentText }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -249,6 +280,43 @@ export function Field({ label, hint, error, optional, style, multiline, ...rest 
   );
 }
 
+/** Buscador en píldora (lámina): icono de lupa + campo. */
+export function SearchField({
+  value,
+  onChangeText,
+  onSubmit,
+  placeholder,
+  label,
+}: {
+  value: string;
+  onChangeText: (t: string) => void;
+  onSubmit?: () => void;
+  placeholder: string;
+  label: string;
+}) {
+  return (
+    <View style={styles.search}>
+      <Icon name="search" color={colors.textSecondary} size={iconSize.md} />
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        onSubmitEditing={onSubmit}
+        placeholder={placeholder}
+        placeholderTextColor={colors.textSecondary}
+        accessibilityLabel={label}
+        returnKeyType="search"
+        autoCorrect={false}
+        style={[styles.searchInput, { color: colors.text }]}
+      />
+      {value ? (
+        <Pressable onPress={() => onChangeText('')} accessibilityRole="button" accessibilityLabel="Borrar búsqueda" hitSlop={10}>
+          <Icon name="x" color={colors.textSecondary} size={iconSize.md} />
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
 export function ToggleRow({ label, hint, value, onChange }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
     <Pressable
@@ -296,7 +364,7 @@ export function Segmented<T extends string>({
             onPress={() => onChange(o.value)}
             accessibilityRole="tab"
             accessibilityState={{ selected: sel }}
-            style={[styles.segment, sel && { backgroundColor: colors.surface3, borderColor: colors.outline }]}
+            style={[styles.segment, sel && { backgroundColor: colors.raised, borderColor: colors.outline }]}
           >
             {o.icon ? <Icon name={o.icon} size={iconSize.sm} color={sel ? colors.text : colors.textSecondary} /> : null}
             <Text style={[typography.label, { color: sel ? colors.text : colors.textSecondary }]}>{o.label}</Text>
@@ -318,8 +386,8 @@ export function Badge({ label, tone = 'neutral', icon }: { label: string; tone?:
   const t = {
     neutral: { bg: colors.raised, fg: colors.text, border: colors.outline },
     news: { bg: colors.news, fg: colors.onNews, border: colors.news },
-    lime: { bg: colors.lime, fg: colors.onLime, border: colors.lime },
-    blue: { bg: 'transparent', fg: colors.blueText, border: colors.blueText },
+    lime: { bg: colors.primary, fg: colors.onPrimary, border: colors.primary },
+    blue: { bg: 'transparent', fg: colors.accentText, border: colors.accentText },
     warning: { bg: 'transparent', fg: colors.newsText, border: colors.newsText },
     danger: { bg: 'transparent', fg: colors.danger, border: colors.danger },
   }[tone];
@@ -332,7 +400,7 @@ export function Badge({ label, tone = 'neutral', icon }: { label: string; tone?:
 }
 
 export function InlineNotice({ children, tone = 'info', icon }: { children: ReactNode; tone?: 'info' | 'warning' | 'error' | 'success'; icon?: IconName }) {
-  const c = { info: colors.blueText, warning: colors.newsText, error: colors.danger, success: colors.success }[tone];
+  const c = { info: colors.accentText, warning: colors.newsText, error: colors.danger, success: colors.success }[tone];
   const i: IconName = icon ?? (tone === 'error' || tone === 'warning' ? 'alert' : tone === 'success' ? 'check-circle' : 'info');
   return (
     <View style={[styles.notice, { borderColor: c }]} accessibilityRole={tone === 'error' ? 'alert' : undefined} accessibilityLiveRegion="polite">
@@ -345,7 +413,7 @@ export function InlineNotice({ children, tone = 'info', icon }: { children: Reac
 export function Loading({ label = 'Cargando…' }: { label?: string }) {
   return (
     <View style={styles.loading} accessibilityRole="progressbar" accessibilityLabel={label}>
-      <ActivityIndicator color={colors.blueText} size="large" />
+      <ActivityIndicator color={colors.accentText} size="large" />
       <Text style={[typography.caption, { color: colors.textSecondary }]}>{label}</Text>
     </View>
   );
@@ -384,85 +452,99 @@ export function confirmAction(title: string, message: string, confirmLabel: stri
   ]);
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg },
-  scrollContent: { flexGrow: 1 },
-  screenInner: { width: '100%', maxWidth: layout.maxContent, alignSelf: 'center', padding: space[4], gap: space[5], paddingBottom: space[12] },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  card: { backgroundColor: colors.card, borderRadius: radii.md, borderWidth: 1, borderColor: colors.border, padding: space[4], gap: space[2] },
-  button: {
-    minHeight: touchTarget,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: space[3],
-    paddingHorizontal: space[5],
-    borderRadius: radii.sm,
-    borderWidth: 1,
-  },
-  buttonRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2] },
-  buttonText: { fontFamily: fonts.bodySemibold, fontSize: 16 },
-  chip: {
-    minHeight: 40,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space[1] + 2,
-    paddingHorizontal: space[3] + 2,
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    // 40 visibles + margen táctil: el objetivo efectivo sigue siendo ≥ 44 px por hitSlop del ScrollView.
-    marginVertical: 4,
-  },
-  input: {
-    minHeight: touchTarget,
-    borderWidth: 1,
-    borderColor: colors.outline,
-    borderRadius: radii.sm,
-    backgroundColor: colors.surface0,
-    color: colors.text,
-    paddingHorizontal: space[3],
-    fontFamily: fonts.body,
-    fontSize: 16,
-  },
-  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: space[3], minHeight: touchTarget, paddingVertical: space[2] },
-  segmented: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface0,
-    borderRadius: radii.sm,
-    padding: 3,
-    gap: 3,
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  segment: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space[1],
-    minHeight: 42,
-    paddingHorizontal: space[3],
-    borderRadius: radii.xs + 2,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: space[2],
-    paddingVertical: 2,
-    borderRadius: radii.xs,
-    borderWidth: 1,
-    alignSelf: 'flex-start',
-  },
-  notice: {
-    flexDirection: 'row',
-    gap: space[3],
-    padding: space[3],
-    borderRadius: radii.sm,
-    borderWidth: 1,
-    backgroundColor: colors.surface0,
-    alignItems: 'flex-start',
-  },
-  loading: { alignItems: 'center', justifyContent: 'center', gap: space[3], paddingVertical: space[10] },
-  skeleton: { height: 76, borderRadius: radii.md, backgroundColor: colors.card },
-});
+const styles = themed(() =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.bg },
+    scrollContent: { flexGrow: 1 },
+    screenInner: { width: '100%', maxWidth: layout.maxContent, alignSelf: 'center', padding: space[4], gap: space[5], paddingBottom: space[12] },
+    sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+    card: { backgroundColor: colors.card, borderRadius: radii.md, borderWidth: 1, borderColor: colors.border, padding: space[4], gap: space[2] },
+    button: {
+      minHeight: touchTarget,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: space[3],
+      paddingHorizontal: space[5],
+      borderRadius: radii.pill,
+      borderWidth: 1,
+    },
+    buttonRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2] },
+    buttonText: { fontFamily: fonts.bodySemibold, fontSize: 16 },
+    chip: {
+      minHeight: 40,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[1] + 2,
+      paddingHorizontal: space[3] + 2,
+      borderRadius: radii.pill,
+      borderWidth: 1,
+      // 40 visibles + margen táctil: el objetivo efectivo sigue siendo ≥ 44 px por hitSlop del ScrollView.
+      marginVertical: 4,
+    },
+    input: {
+      minHeight: touchTarget,
+      borderWidth: 1,
+      borderColor: colors.outline,
+      borderRadius: radii.sm,
+      backgroundColor: colors.surface0,
+      color: colors.text,
+      paddingHorizontal: space[3],
+      fontFamily: fonts.body,
+      fontSize: 16,
+    },
+    search: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[3],
+      minHeight: touchTarget + 4,
+      paddingHorizontal: space[4],
+      borderRadius: radii.pill,
+      borderWidth: 1,
+      borderColor: colors.outline,
+      backgroundColor: colors.card,
+    },
+    searchInput: { flex: 1, minHeight: touchTarget, fontFamily: fonts.body, fontSize: 16 },
+    toggleRow: { flexDirection: 'row', alignItems: 'center', gap: space[3], minHeight: touchTarget, paddingVertical: space[2] },
+    segmented: {
+      flexDirection: 'row',
+      backgroundColor: colors.surface0,
+      borderRadius: radii.sm,
+      padding: 3,
+      gap: 3,
+      alignSelf: 'flex-start',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    segment: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[1],
+      minHeight: 42,
+      paddingHorizontal: space[3],
+      borderRadius: radii.xs + 2,
+      borderWidth: 1,
+      borderColor: 'transparent',
+    },
+    badge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      paddingHorizontal: space[2],
+      paddingVertical: 2,
+      borderRadius: radii.xs,
+      borderWidth: 1,
+      alignSelf: 'flex-start',
+    },
+    notice: {
+      flexDirection: 'row',
+      gap: space[3],
+      padding: space[3],
+      borderRadius: radii.sm,
+      borderWidth: 1,
+      backgroundColor: colors.surface0,
+      alignItems: 'flex-start',
+    },
+    loading: { alignItems: 'center', justifyContent: 'center', gap: space[3], paddingVertical: space[10] },
+    skeleton: { height: 76, borderRadius: radii.md, backgroundColor: colors.card },
+  }),
+);

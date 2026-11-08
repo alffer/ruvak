@@ -21,7 +21,7 @@ src/app/                pantallas (rutas)
 src/components/         ui (Button, Chip, Field, Card, Badge, Segmented, ToggleRow, InlineNotice, ErrorState…),
                         Icon, Place (tarjetas y etiquetas), PlaceForm, CitySwitcher, Ruvak (ilustraciones de la mascota),
                         SetupNeeded, map/ (MapCanvas web y móvil)
-src/lib/                sin UI: tokens, types, supabase, session, data, useLoad, format, authErrors,
+src/lib/                sin UI: tokens (paletas clara/oscura), theme (ThemeProvider), types, supabase, session, data, useLoad, format, authErrors,
                         y lógica pura comprobada por scripts: dedupe, takeout, urlParse, filters, recommend
 supabase/               migrations/ (esquema + RLS) y seed.sql
 scripts/                check-*.ts (lógica pura), check-rls.sh/.sql (+ rls-stub.sql), capture-screens.mjs

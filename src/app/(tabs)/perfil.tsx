@@ -1,15 +1,17 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Platform, Share, View } from 'react-native';
-import { Button, Card, Chip, confirmAction, Field, H2, InlineNotice, P, Row, Screen, ToggleRow } from '@/components/ui';
+import { Button, Card, Chip, confirmAction, Field, H1, H2, InlineNotice, P, Row, Screen, Segmented, ToggleRow } from '@/components/ui';
 import { deleteMyAccount, exportMyData, setInterests, updateProfile } from '@/lib/data';
 import { useSession } from '@/lib/session';
+import { useTheme } from '@/lib/theme';
 import { supabase } from '@/lib/supabase';
 import { space } from '@/lib/tokens';
 
 /** Perfil y ajustes: preferencias, importación, privacidad y cuenta (§4). */
 export default function ProfileScreen() {
   const { session, profile, cities, categories, interests, refreshProfile } = useSession();
+  const { pref, setPref } = useTheme();
   const [name, setName] = useState(profile?.displayName ?? '');
   const [picked, setPicked] = useState<number[]>(interests);
   const [msg, setMsg] = useState<{ tone: 'success' | 'error'; text: string } | null>(null);
@@ -62,6 +64,7 @@ export default function ProfileScreen() {
 
   return (
     <Screen contentStyle={{ maxWidth: 720 }}>
+      <H1>Perfil</H1>
       <Card>
         <H2>Tu perfil</H2>
         <P muted style={{ fontSize: 14 }}>
@@ -69,6 +72,23 @@ export default function ProfileScreen() {
         </P>
         <Field label="Nombre visible" value={name} onChangeText={setName} />
         <P style={{ fontSize: 14 }}>Ciudad habitual: {cities.find((c) => c.id === profile?.homeCityId)?.name ?? 'sin elegir'}</P>
+      </Card>
+
+      <Card>
+        <H2>Apariencia</H2>
+        <P muted style={{ fontSize: 14 }}>
+          «Sistema» sigue el ajuste de tu móvil u ordenador.
+        </P>
+        <Segmented
+          label="Tema"
+          value={pref}
+          onChange={setPref}
+          options={[
+            { value: 'system', label: 'Sistema' },
+            { value: 'dark', label: 'Oscuro' },
+            { value: 'light', label: 'Claro' },
+          ]}
+        />
       </Card>
 
       <Card>

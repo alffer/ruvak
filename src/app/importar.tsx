@@ -10,7 +10,7 @@ import { DUPLICATE_REASON_LABELS, findDuplicates, type DuplicateMatch } from '@/
 import { plural } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { ImportFormatError, parseTakeoutFile, type ImportParseResult } from '@/lib/takeout';
-import { colors, iconSize, radii, space, touchTarget, typography } from '@/lib/tokens';
+import { colors, iconSize, radii, space, themed, touchTarget, typography } from '@/lib/tokens';
 
 type Step = 'pick' | 'preview' | 'running' | 'done';
 
@@ -190,7 +190,7 @@ export default function ImportScreen() {
                 ) : null}
                 {matches.length && included ? (
                   <View style={styles.dup}>
-                    <Text style={[typography.label, { color: colors.newsText }]}>Posible duplicado</Text>
+                    <Text style={[typography.label, { color: colors.accentText }]}>Posible duplicado</Text>
                     {matches.slice(0, 3).map((m) => (
                       <Pressable
                         key={m.placeId}
@@ -236,7 +236,7 @@ export default function ImportScreen() {
           'Elige aquí «Saved Places.json» o el .csv de una lista (carpeta «Guardado»).',
         ].map((s, i) => (
           <Row key={s} gap={space[2]} style={{ alignItems: 'flex-start' }}>
-            <Text style={[typography.bodyStrong, { color: colors.lime, width: 20 }]}>{i + 1}.</Text>
+            <Text style={[typography.bodyStrong, { color: colors.accentText, width: 20 }]}>{i + 1}.</Text>
             <P style={{ flex: 1 }}>{s}</P>
           </Row>
         ))}
@@ -249,19 +249,21 @@ export default function ImportScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  check: { flexDirection: 'row', gap: space[3], alignItems: 'flex-start', minHeight: touchTarget },
-  box: {
-    width: 24,
-    height: 24,
-    borderRadius: radii.xs,
-    borderWidth: 2,
-    borderColor: colors.outline,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 2,
-  },
-  boxOn: { backgroundColor: colors.primary, borderColor: colors.primary },
-  dup: { gap: space[1], padding: space[3], borderRadius: radii.sm, borderWidth: 1, borderColor: colors.newsText },
-  option: { flexDirection: 'row', alignItems: 'center', gap: space[2], minHeight: touchTarget },
-});
+const styles = themed(() =>
+  StyleSheet.create({
+    check: { flexDirection: 'row', gap: space[3], alignItems: 'flex-start', minHeight: touchTarget },
+    box: {
+      width: 24,
+      height: 24,
+      borderRadius: radii.xs,
+      borderWidth: 2,
+      borderColor: colors.outline,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 2,
+    },
+    boxOn: { backgroundColor: colors.primary, borderColor: colors.primary },
+    dup: { gap: space[1], padding: space[3], borderRadius: radii.sm, borderWidth: 1, borderColor: colors.accentText },
+    option: { flexDirection: 'row', alignItems: 'center', gap: space[2], minHeight: touchTarget },
+  }),
+);

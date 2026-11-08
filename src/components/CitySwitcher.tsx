@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSession } from '@/lib/session';
-import { colors, elevation, iconSize, radii, space, states, touchTarget, typography } from '@/lib/tokens';
+import { colors, elevation, iconSize, radii, space, states, themed, touchTarget, typography } from '@/lib/tokens';
 import { Icon } from './Icon';
 import { Badge, Button, H2, P } from './ui';
 
@@ -21,7 +21,7 @@ export function CitySwitcher() {
         accessibilityLabel={`Ciudad activa: ${activeCity.name}, ${kind}. Cambiar de ciudad`}
         style={({ pressed }) => [styles.trigger, { opacity: pressed ? states.pressedOpacity : 1 }]}
       >
-        <Icon name="pin" size={iconSize.sm} color={colors.lime} />
+        <Icon name="pin" size={iconSize.sm} color={colors.accentText} />
         <Text style={[typography.label, { color: colors.text }]}>{activeCity.name}</Text>
         <Text style={[typography.caption, { color: colors.textSecondary }]}>{kind}</Text>
         <Icon name="chevron-down" size={iconSize.sm} color={colors.textSecondary} />
@@ -41,9 +41,9 @@ export function CitySwitcher() {
                 }}
                 accessibilityRole="button"
                 accessibilityState={{ selected: sel }}
-                style={[styles.option, sel && { borderColor: colors.blueText }]}
+                style={[styles.option, sel && { borderColor: colors.accentText }]}
               >
-                <Icon name={sel ? 'check' : 'pin'} color={sel ? colors.blueText : colors.textSecondary} />
+                <Icon name={sel ? 'check' : 'pin'} color={sel ? colors.accentText : colors.textSecondary} />
                 <Text style={[typography.bodyStrong, { color: colors.text, flex: 1 }]}>{c.name}</Text>
                 {c.id === profile?.homeCityId ? <Badge label="Habitual" /> : null}
               </Pressable>
@@ -67,42 +67,44 @@ export function CitySwitcher() {
   );
 }
 
-const styles = StyleSheet.create({
-  trigger: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space[1] + 2,
-    minHeight: touchTarget - 8,
-    paddingHorizontal: space[3],
-    borderRadius: radii.pill,
-    borderWidth: 1,
-    borderColor: colors.outline,
-    backgroundColor: colors.surface0,
-    marginHorizontal: space[3],
-  },
-  backdrop: { ...StyleSheet.absoluteFill, backgroundColor: colors.overlay },
-  sheet: {
-    position: 'absolute',
-    top: 72,
-    alignSelf: 'center',
-    width: '92%',
-    maxWidth: 420,
-    backgroundColor: colors.card,
-    borderRadius: radii.lg,
-    padding: space[4],
-    gap: space[3],
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...elevation.popover,
-  },
-  option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space[3],
-    minHeight: touchTarget,
-    paddingHorizontal: space[3],
-    borderRadius: radii.sm,
-    borderWidth: 1,
-    borderColor: colors.outline,
-  },
-});
+const styles = themed(() =>
+  StyleSheet.create({
+    trigger: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[1] + 2,
+      minHeight: touchTarget - 8,
+      paddingHorizontal: space[3],
+      borderRadius: radii.pill,
+      borderWidth: 1,
+      borderColor: colors.outline,
+      backgroundColor: colors.surface0,
+      marginHorizontal: space[3],
+    },
+    backdrop: { ...StyleSheet.absoluteFill, backgroundColor: colors.overlay },
+    sheet: {
+      position: 'absolute',
+      top: 72,
+      alignSelf: 'center',
+      width: '92%',
+      maxWidth: 420,
+      backgroundColor: colors.card,
+      borderRadius: radii.lg,
+      padding: space[4],
+      gap: space[3],
+      borderWidth: 1,
+      borderColor: colors.border,
+      ...elevation.popover,
+    },
+    option: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[3],
+      minHeight: touchTarget,
+      paddingHorizontal: space[3],
+      borderRadius: radii.sm,
+      borderWidth: 1,
+      borderColor: colors.outline,
+    },
+  }),
+);

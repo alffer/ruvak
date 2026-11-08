@@ -18,7 +18,7 @@ export function SetupNeeded() {
           'Reinicia con npx expo start.',
         ].map((s, i) => (
           <View key={s} style={{ flexDirection: 'row', gap: space[3] }}>
-            <Text style={[typography.bodyStrong, { color: colors.lime, width: 20 }]}>{i + 1}.</Text>
+            <Text style={[typography.bodyStrong, { color: colors.accentText, width: 20 }]}>{i + 1}.</Text>
             <P style={{ flex: 1 }}>{s}</P>
           </View>
         ))}

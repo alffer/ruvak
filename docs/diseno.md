@@ -1,38 +1,47 @@
 # Diseño
 
-Fuente: documento de producto §9–11. Valores solo en `src/lib/tokens.ts`.
+Referencia visual: la lámina «Sistema de diseño» y las maquetas de la usuaria (móvil, claro y oscuro). Fuente de verdad en código: `src/lib/tokens.ts`.
 
-## Color
+## Marca
+
+- **Logo**: «ruvak» en minúsculas (Space Grotesk bold) con un **guion bajo lima** («ruvak_»). `RuvakWordmark`.
+- **Títulos**: llevan el mismo guion lima al final («Descubre Gijón_», «Explorar_»). `H1`/`H2` lo añaden solos; es decorativo y se oculta a los lectores de pantalla.
+- **Personaje**: gato (a pie por la ciudad) y grajo (entre ciudades). Ver `mascota.md`.
+
+## Color (lámina)
 
 | Token | Valor | Uso |
 | ----- | ----- | --- |
-| `brand.blue` / `colors.primary` | `#2457D6` | Fondo de acciones principales (texto crema, **5,4:1, AA**) |
-| `colors.blueText` | `#A9C0F7` | Enlaces, iconos activos, texto azul (≥ 7,2:1) |
-| `brand.orange` / `colors.news` | `#F06438` | Fondo de etiquetas de novedades (texto tinta, 5,5:1) y marcadores de recomendación |
-| `colors.newsText` | `#FFA587` | Texto naranja (≥ 6,8:1) |
-| `brand.lime` | `#C9D84B` | Ojos de RUVAK, sobrelíneas y detalles puntuales. **No** es color de botones |
-| `brand.cream` / `colors.text` | `#F4F0E7` | Texto principal (≥ 11,5:1) |
-| `colors.textSecondary` | `#C4BFB4` | Texto secundario (≥ 7,1:1, AAA en todas las superficies) |
-| `surface0…3` | `#111316` `#17191D` `#22262C` `#2C3138` | Fondos y tarjetas |
-| `colors.outline` | `#767C85` | Bordes de controles (≥ 3,1:1) |
+| `brand.ink` | `#17191D` | Fondo oscuro; texto en claro; texto sobre lima y naranja |
+| `brand.cream` | `#F4F0E7` | Fondo claro; texto en oscuro; tarjetas «de papel» |
+| `brand.lime` | `#C9D84B` | **Acción principal** (relleno + texto tinta), estado activo, guion de la marca |
+| `brand.blue` | `#2457D6` | Enlaces e iconos activos **en tema claro** |
+| `brand.orange` | `#F06438` | Etiquetas de novedad y categoría (texto tinta) y marcadores de recomendación |
 
-**Por qué**: el azul de marca da 2,1–3,0:1 sobre fondos oscuros, así que no se usa para texto. El naranja da 2,8:1 con texto crema; sobre naranja, el texto va en tinta.
+Dos temas: **oscuro (por defecto)** y **claro**. En Perfil › Apariencia: Sistema, Oscuro o Claro; se guarda en el dispositivo.
+
+Contraste medido (WCAG 2.2): texto 15,5:1; secundario ≥ 6,9:1; lima sobre fondo oscuro 11,2:1; azul sobre crema 5,4:1 (AA); tinta sobre naranja 5,5:1; bordes de controles ≥ 3,1:1.
+
+**Desviaciones deliberadas de las maquetas por accesibilidad**
+- Texto de la etiqueta naranja en **tinta**, no blanco (blanco sobre naranja da 2,8:1).
+- El lima **nunca** se usa como texto sobre fondo claro (1,2:1): ahí el acento es el azul.
+- Las maquetas muestran valoraciones, horarios, precio medio, wifi y «pet friendly»: **solo aparecerán cuando existan datos reales** (editorial o fuente autorizada). Sin foto, portada tinta con la categoría.
 
 ## Tipografía
 
-Space Grotesk (titulares) e Inter (interfaz), las dos con licencia OFL y cargadas con `expo-font`. Mayúsculas espaciadas (`overline`) solo en etiquetas breves.
+Space Grotesk (títulos, marca) e Inter (interfaz), con licencia OFL, cargadas con `expo-font`. Mayúsculas espaciadas solo en etiquetas breves.
 
-## Reglas
+## Forma y componentes
 
-- Escala de espaciado de 4 px (`space`), radios moderados (`radii`), sin sombras salvo menús y popovers.
-- Objetivos táctiles de 48 px. Estados siempre con icono + texto: ✓ en chips seleccionados, iconos en las etiquetas de estado, forma distinta en los marcadores del mapa.
-- Fotografía: solo fotos reales con permiso y crédito. Sin foto, bloque tipográfico con línea lima.
-- Sin hover como requisito; sin animaciones (respeta movimiento reducido).
-- Iconos: Lucide de trazo 2. No se mezclan con ilustraciones de RUVAK en la navegación.
+- Botones y filtros en **píldora**; tarjetas con radio 16; escala de 4 px.
+- Botones: `primary` (lima), `solid` (tinta en claro, crema en oscuro: «Guardar»), `secondary` (contorno), `ghost`, `danger`.
+- Filtros (`Chip`): activo en lima con ✓; inactivo con contorno.
+- Accesos por categoría con icono (`CategoryShortcut`), buscador en píldora (`SearchField`) y tarjetas «de papel» de Recomendados (`RecommendedCard`).
+- **Navegación inferior**: Inicio, Explorar, **«+» lima central (añadir lugar)**, Guardados y Mapa. El perfil va en la cabecera. En escritorio (≥ 900 px), barra lateral con «Añadir lugar» y Perfil.
+- Estados siempre con icono + texto (nunca solo color): ✓ en filtros activos, forma distinta en los marcadores del mapa (círculo lima = guardado, rombo naranja = recomendación).
+- Mapa: marcadores con borde tinta; en tema oscuro, teselas oscurecidas con un filtro CSS.
+- Sin sombras salvo menús y popovers. Sin animaciones.
 
-## Componentes (`src/components`)
+## Cómo se aplican los temas
 
-`ui.tsx`: Screen, H1/H2/P/Overline, SectionHeader, Card, Row, Button (primary/secondary/ghost/danger), LinkButton,
-Chip/ChipRow, Field, ToggleRow, Segmented, Badge, InlineNotice, Loading, SkeletonList, ErrorState, confirmAction.
-`Place.tsx`: PlaceListItem, PlaceStatusBadge, VerificationBadge, KindBadge, DiscoveryCard, SourceLine.
-`CitySwitcher.tsx`, `PlaceForm.tsx`, `Ruvak.tsx` (RuvakAvatar, RuvakEmptyState), `map/`.
+`colors` en `tokens.ts` es un objeto vivo. `ThemeProvider` (`src/lib/theme.tsx`) aplica la paleta y vuelve a montar la app al cambiar. Los estilos que usan colores van en `themed(() => StyleSheet.create(...))` para recalcularse; los colores usados en línea se leen al renderizar.

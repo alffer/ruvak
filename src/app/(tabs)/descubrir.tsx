@@ -1,14 +1,15 @@
+import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { DiscoveryCard } from '@/components/Place';
-import { RuvakAvatar, RuvakEmptyState } from '@/components/Ruvak';
-import { Chip, ChipRow, ErrorState, H1, InlineNotice, LinkButton, P, Row, Screen, SkeletonList } from '@/components/ui';
+import { RuvakEmptyState, RuvakIllustration } from '@/components/Ruvak';
+import { Chip, ChipRow, ErrorState, H1, InlineNotice, LinkButton, P, Row, Screen, SearchField, SkeletonList } from '@/components/ui';
 import { getDiscovery, getMyPlaces, hideDiscovery, savePlace, unhideAllDiscovery } from '@/lib/data';
 import { nameKey } from '@/lib/dedupe';
 import { rankDiscovery, reasonFor } from '@/lib/recommend';
 import { useCategoryName, useSession } from '@/lib/session';
 import { space } from '@/lib/tokens';
-import type { DiscoveryKind } from '@/lib/types';
+import type { DiscoveryItem, DiscoveryKind } from '@/lib/types';
 import { useLoad } from '@/lib/useLoad';
 
 type KindFilter = 'all' | 'news' | 'recommended' | 'featured' | 'plan';
@@ -20,14 +21,26 @@ const KIND_FILTERS: { key: KindFilter; label: string; kinds: DiscoveryKind[] }[]
   { key: 'plan', label: 'Planes', kinds: ['plan'] },
 ];
 
-/** Descubrir: contenido editorial curado de la ciudad activa (RF-09). */
+/** Búsqueda de texto sobre título, resumen, lugar, zona y categoría (sin tildes ni mayúsculas). */
+function matches(i: DiscoveryItem, q: string, categoryName: (id: number | null) => string | null): boolean {
+  const terms = nameKey(q).split(' ').filter(Boolean);
+  if (!terms.length) return true;
+  const hay = nameKey([i.title, i.summary, i.place?.name, i.place?.zone, categoryName(i.place?.categoryId ?? null)].filter(Boolean).join(' '));
+  return terms.every((t) => hay.includes(t));
+}
+
+/** Explorar: contenido editorial curado de la ciudad activa (RF-09). */
 export default function Discover() {
   const { activeCity, profile, interests, categories, bump } = useSession();
   const categoryName = useCategoryName();
   const items = useLoad(() => (activeCity ? getDiscovery(activeCity.id) : Promise.resolve([])), [activeCity?.id]);
   const saved = useLoad(getMyPlaces, []);
   const [kind, setKind] = useState<KindFilter>('all');
-  const [categoryId, setCategoryId] = useState<number | null>(null);
+  // Texto y categoría viven en la dirección: así llegan desde Inicio (buscador y accesos) y se conservan al volver.
+  const params = useLocalSearchParams<{ q?: string; cat?: string }>();
+  const query = params.q ?? '';
+  const categoryId = params.cat ? Number(params.cat) || null : null;
+  const setCategoryId = (id: number | null) => router.setParams({ cat: id == null ? '' : String(id) });
   const [zone, setZone] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -41,6 +54,7 @@ export default function Discover() {
     (i) =>
       (!kinds.length || kinds.includes(i.kind)) &&
       (categoryId == null || i.place?.categoryId === categoryId) &&
+      matches(i, query, categoryName) &&
       (!zone || nameKey(i.place?.zone) === nameKey(zone)),
   );
 
@@ -57,13 +71,16 @@ export default function Discover() {
 
   return (
     <Screen>
-      <Row gap={space[3]}>
-        <RuvakAvatar size={44} />
-        <View style={{ flex: 1, gap: 2 }}>
-          <H1>Descubrir</H1>
+      <Row gap={space[3]} style={{ alignItems: 'flex-end' }}>
+        <View style={{ flex: 1, gap: space[1] }}>
+          <H1>Explorar</H1>
           <P muted>He encontrado algunas pistas por {activeCity?.name ?? 'tu ciudad'}.</P>
         </View>
+        <RuvakIllustration pose="gato-mirada" height={96} />
       </Row>
+
+      {/* key: al llegar con otro texto desde Inicio, el campo arranca con él. */}
+      <ExploreSearch key={query} initial={query} />
 
       <View style={{ gap: space[1] }}>
         <ChipRow>
@@ -115,5 +132,21 @@ export default function Discover() {
       </View>
       {visible.length ? <LinkButton label="Mostrar lo que ocultaste" onPress={() => unhideAllDiscovery().then(items.reload)} /> : null}
     </Screen>
+  );
+}
+
+function ExploreSearch({ initial }: { initial: string }) {
+  const [text, setText] = useState(initial);
+  return (
+    <SearchField
+      value={text}
+      onChangeText={(t) => {
+        setText(t);
+        if (!t && initial) router.setParams({ q: '' });
+      }}
+      onSubmit={() => router.setParams({ q: text.trim() })}
+      placeholder="Busca lugares, planes o ideas…"
+      label="Buscar en Explorar"
+    />
   );
 }

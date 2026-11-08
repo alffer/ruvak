@@ -4,13 +4,18 @@
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, space, typography } from '@/lib/tokens';
+import { colors, fonts, space, typography } from '@/lib/tokens';
 import { Button } from './ui';
 
 /** Poses disponibles. Para añadir una: original en assets/ruvak/originales, prepare-ruvak.mjs y aquí. */
 const POSES = {
   'gato-cabeza': { source: require('../../assets/ruvak/ruvak_gato_cabeza_v1.webp'), ratio: 780 / 900 },
   'gato-sentado': { source: require('../../assets/ruvak/ruvak_gato_sentado_v1.webp'), ratio: 556 / 900 },
+  'gato-perfil': { source: require('../../assets/ruvak/ruvak_gato_perfil_v1.webp'), ratio: 826 / 900 },
+  'gato-mirada': { source: require('../../assets/ruvak/ruvak_gato_mirada_v1.webp'), ratio: 730 / 900 },
+  'gato-sorprendido': { source: require('../../assets/ruvak/ruvak_gato_sorprendido_v1.webp'), ratio: 774 / 900 },
+  'gato-caminando': { source: require('../../assets/ruvak/ruvak_gato_caminando_v1.webp'), ratio: 900 / 465 },
+  'gato-de-pie': { source: require('../../assets/ruvak/ruvak_gato_de-pie_v1.webp'), ratio: 900 / 693 },
   'grajo-vuelo': { source: require('../../assets/ruvak/ruvak_grajo_vuelo_v1.webp'), ratio: 900 / 645 },
   'grajo-ataque': { source: require('../../assets/ruvak/ruvak_grajo_ataque_v1.webp'), ratio: 900 / 600 },
   transformacion: { source: require('../../assets/ruvak/ruvak_transformacion_secuencia_v1.webp'), ratio: 1600 / 476 },
@@ -45,12 +50,14 @@ export function RuvakAvatar({ form = 'cat', size = 56 }: { form?: RuvakForm; siz
   );
 }
 
-/** Marca: cabeza + «RUVAK» en Space Grotesk. */
-export function RuvakWordmark({ size = 28 }: { size?: number }) {
+/** Marca: «ruvak» en minúsculas con el guion lima de la lámina («ruvak_»). `withHead` añade la cabeza del gato. */
+export function RuvakWordmark({ size = 28, withHead = false }: { size?: number; withHead?: boolean }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: size * 0.3 }} accessible accessibilityRole="header" accessibilityLabel="RUVAK">
-      <RuvakAvatar size={size * 1.25} />
-      <Text style={{ ...typography.title, fontSize: size, lineHeight: size * 1.15, letterSpacing: size * 0.08, color: colors.text }}>RUVAK</Text>
+      {withHead ? <RuvakAvatar size={size * 1.25} /> : null}
+      <Text aria-hidden style={{ fontFamily: fonts.heading, fontSize: size, lineHeight: size * 1.2, letterSpacing: -size * 0.04, color: colors.text }}>
+        ruvak<Text style={{ color: colors.mark }}>_</Text>
+      </Text>
     </View>
   );
 }

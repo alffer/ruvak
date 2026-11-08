@@ -8,6 +8,7 @@ import { View } from 'react-native';
 import { IconButton } from '@/components/Icon';
 import { SetupNeeded } from '@/components/SetupNeeded';
 import { Loading } from '@/components/ui';
+import { ThemeProvider, useTheme } from '@/lib/theme';
 import { SessionProvider, useSession } from '@/lib/session';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { colors, fonts } from '@/lib/tokens';
@@ -20,10 +21,20 @@ export default function RootLayout() {
     if (loaded || fontError) SplashScreen.hideAsync().catch(() => {});
   }, [loaded, fontError]);
   if (!loaded && !fontError) return <View style={{ flex: 1, backgroundColor: colors.bg }} />;
+  return (
+    <ThemeProvider>
+      <Shell />
+    </ThemeProvider>
+  );
+}
 
+function Shell() {
+  const { scheme, ready } = useTheme();
+  // Hasta leer la preferencia guardada no se pinta (evita un parpadeo de tema).
+  if (!ready) return <View style={{ flex: 1, backgroundColor: colors.bg }} />;
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <StatusBar style="light" />
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       {isSupabaseConfigured ? (
         <SessionProvider>
           <Navigation />

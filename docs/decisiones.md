@@ -11,5 +11,9 @@
 | 2026-11-07 | Leaflet + OSM, también en móvil (WebView) | Sin coste ni clave; un solo código de mapa. Proveedor de teselas configurable |
 | 2026-11-07 | Pegar URL **no** descarga la página | Sin scraping (§8): solo se lee la propia URL (tipo, nombre y coordenadas de Google Maps si vienen en ella) |
 | 2026-11-07 | Semilla con lugares reales, «Sin verificar» y sin horarios ni aperturas | Criterio 19: nada inventado presentado como real |
-| 2026-11-07 | Azul de marca solo como fondo de botón; variantes claras para texto | El azul de marca no llega a 3:1 sobre fondo oscuro |
+| 2026-11-08 | Identidad según las maquetas y la lámina de la usuaria: lima como color de acción, azul solo en claro (enlaces), naranja en etiquetas | Es el diseño que quiere; el lima del documento original pasa de «detalle» a acción principal |
+| 2026-11-08 | Dos temas (oscuro por defecto, claro) con preferencia guardada | Las maquetas traen los dos; «Sistema» respeta el ajuste del móvil |
+| 2026-11-08 | Navegación inferior de la lámina: Inicio, Explorar, «+», Guardados, Mapa; perfil en la cabecera | Añadir un lugar es la acción más frecuente; Perfil y Agenda/Viajes pasan a segundo nivel |
+| 2026-11-08 | Valoraciones, horarios, precio, wifi y fotos de las maquetas solo con datos reales | Criterio 19: nada inventado presentado como real |
+| 2026-11-08 | Texto de etiquetas naranjas en tinta, no blanco | Blanco sobre naranja da 2,8:1 |
 | 2026-11-07 | Mascota con las ilustraciones de la usuaria (WebP con alfa) e iconos generados desde la cabeza del gato | Identidad real; los originales se conservan intactos y los derivados se regeneran con `prepare-ruvak.mjs` |

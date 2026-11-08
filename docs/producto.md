@@ -4,8 +4,9 @@ Referencia completa: [documento-producto.md](documento-producto.md). Aquí, lo i
 
 ## Navegación
 
-- **Móvil**: barra inferior con Inicio, Descubrir, Mapa, Lugares (Mis lugares) y Perfil. Agenda y Viajes se abren desde Inicio y Perfil.
-- **Escritorio (≥ 900 px)**: la misma navegación como barra lateral.
+- **Móvil**: barra inferior con Inicio, Explorar, **«+» (añadir lugar)**, Guardados y Mapa. El perfil está en la cabecera; Agenda y Viajes se abren desde Inicio y Perfil.
+- **Escritorio (≥ 900 px)**: barra lateral con «Añadir lugar» y Perfil.
+- **Tema** claro u oscuro (Perfil › Apariencia; por defecto oscuro, «Sistema» sigue al dispositivo).
 - **Selector de ciudad** en la cabecera de cada pestaña: ciudad activa y si es «Habitual» o «Explorando». Cambia Descubrir y Mapa; la colección es global.
 - Las pantallas interiores siempre tienen «Volver» (si se abren por enlace directo, vuelve a Inicio).
 
@@ -16,10 +17,10 @@ Referencia completa: [documento-producto.md](documento-producto.md). Aquí, lo i
 | `/entrar`, `/registro`    | Acceso y alta (correo + contraseña de 8+ caracteres). Si el proyecto pide confirmar el correo, se avisa.          |
 | `/recuperar`, `/nueva-clave` | Recuperar acceso por correo. El mensaje no revela si la cuenta existe.                                         |
 | `/bienvenida`             | Primera vez: ciudad habitual (Gijón), intereses y personalización.                                                 |
-| `/` Inicio                | Saludo, contadores, Añadir/Importar, Pendientes, Favoritos, 3 novedades y accesos a Agenda y Viajes.               |
-| `/descubrir`              | Contenido editorial de la ciudad: filtros por tipo, categoría y zona; razón de la recomendación; guardar y ocultar. |
+| `/` Inicio                | Portada «Descubre Gijón_», buscador, accesos por categoría, «Recomendados para ti», próxima parada, favoritos y Agenda/Viajes. |
+| `/descubrir` (Explorar)   | Contenido editorial de la ciudad: búsqueda de texto, filtros por tipo, categoría y zona; razón de la recomendación; guardar y ocultar. |
 | `/mapa`                   | Mapa (Leaflet + OSM) con agrupación, guardados (círculo azul) y recomendaciones (rombo naranja), filtros, panel inferior y vista Lista. |
-| `/lugares`                | Mis lugares: búsqueda (nombre, categoría, zona, nota, etiquetas), estados, categoría, zona, orden, archivados; pestaña Listas. |
+| `/lugares` (Guardados)    | Guardados: búsqueda (nombre, categoría, zona, nota, etiquetas), estados, categoría, zona, orden, archivados; pestaña Listas. |
 | `/lista/[id]`             | Una lista: sugerida (`pending`, `favorites`, `visited`) o propia (renombrar, borrar).                              |
 | `/lugar/[id]`             | Ficha: estado, favorito, listas, nota privada y etiquetas, información práctica, fuentes con fecha, archivar o borrar. |
 | `/lugar/nuevo`            | Añadir: pegar enlace (TikTok, Instagram, Google Maps, web) o alta manual. Avisa de posibles duplicados.            |

@@ -12,7 +12,7 @@ documentación al día en el mismo commit que cualquier cambio de comportamiento
 
 - **Idioma**: la app y la documentación están en castellano; habla con la usuaria en castellano.
 - **Nada de `git push`, despliegues ni compilaciones sin aprobación expresa.** Se commitea en local y se pregunta.
-- **Marca**: colores, espaciado y tipografía solo desde `src/lib/tokens.ts`; nada de HEX sueltos. Ver `docs/diseno.md`.
+- **Marca**: colores, espaciado y tipografía solo desde `src/lib/tokens.ts`; nada de HEX sueltos. Hay dos temas (oscuro y claro): los estilos con color van en `themed(() => StyleSheet.create(...))`. Referencia: maquetas y lámina de la usuaria (ver `docs/diseno.md`).
 - **Accesibilidad** (objetivo WCAG 2.2 AA, texto AAA donde se pueda): contraste medido en `tokens.ts`,
   objetivos táctiles de 48 px, etiquetas accesibles, foco visible y nunca un estado solo con color.
 - **Datos**: no se inventan horarios, aperturas, reseñas ni fotos. Todo dato variable lleva fuente y

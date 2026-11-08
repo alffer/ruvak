@@ -228,16 +228,24 @@ const SHOTS = [
   ['10-admin', '/admin'],
   ['11-viajes', '/viajes'],
 ];
+// [sufijo, tamaño, tema]: móvil en oscuro y claro, escritorio en oscuro.
 const VIEWPORTS = [
-  ['movil', { width: 390, height: 844 }],
-  ['escritorio', { width: 1280, height: 860 }],
+  ['movil', { width: 390, height: 844 }, 'dark'],
+  ['movil-claro', { width: 390, height: 844 }, 'light'],
+  ['escritorio', { width: 1280, height: 860 }, 'dark'],
 ];
 
 const browser = await chromium.launch();
 const problems = [];
-for (const [vpName, viewport] of VIEWPORTS) {
+for (const [vpName, viewport, theme] of VIEWPORTS) {
   const ctx = await browser.newContext({ viewport, deviceScaleFactor: 1 });
-  await ctx.addInitScript((s) => localStorage.setItem('sb-demo-auth-token', JSON.stringify(s)), session);
+  await ctx.addInitScript(
+    ([s, t]) => {
+      localStorage.setItem('sb-demo-auth-token', JSON.stringify(s));
+      localStorage.setItem('ruvak:tema', t);
+    },
+    [session, theme],
+  );
   await ctx.route('https://demo.supabase.co/**', async (route) => {
     const url = new URL(route.request().url());
     const m = /^\/rest\/v1\/([a-z_]+)/.exec(url.pathname);

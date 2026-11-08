@@ -159,7 +159,7 @@ export default function NewPlace() {
           </Card>
 
           {dups?.length ? (
-            <Card style={{ borderColor: colors.newsText }}>
+            <Card style={{ borderColor: colors.accentText }}>
               <H2>¿Es alguno de estos?</H2>
               <P muted style={{ fontSize: 14 }}>
                 Para no duplicar fichas, mira si ya existe. Tú decides.

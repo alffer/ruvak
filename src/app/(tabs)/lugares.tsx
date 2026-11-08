@@ -4,7 +4,23 @@ import { Text, View } from 'react-native';
 import { Icon } from '@/components/Icon';
 import { PlaceListItem } from '@/components/Place';
 import { RuvakEmptyState } from '@/components/Ruvak';
-import { Button, Card, Chip, ChipRow, ErrorState, Field, InlineNotice, LinkButton, P, Row, Screen, Segmented, SkeletonList, ToggleRow } from '@/components/ui';
+import {
+  Button,
+  Card,
+  Chip,
+  ChipRow,
+  ErrorState,
+  Field,
+  H1,
+  InlineNotice,
+  LinkButton,
+  P,
+  Row,
+  Screen,
+  Segmented,
+  SkeletonList,
+  ToggleRow,
+} from '@/components/ui';
 import { createCollection, getCollections, getMyPlaces } from '@/lib/data';
 import {
   countActive,
@@ -69,6 +85,7 @@ export default function MyPlaces() {
 
   return (
     <Screen>
+      <H1>Guardados</H1>
       <Row gap={space[2]} wrap style={{ justifyContent: 'space-between' }}>
         <Segmented
           label="Sección"
@@ -210,7 +227,7 @@ function ListRow({ name, count, onPress, smart }: { name: string; count: number;
       accessibilityLabel={`${name}, ${plural(count, 'lugar', 'lugares')}`}
       style={{ flexDirection: 'row', alignItems: 'center', gap: space[3] }}
     >
-      <Icon name={smart ? 'bookmark-check' : 'list'} color={smart ? colors.lime : colors.blueText} size={iconSize.lg} />
+      <Icon name={smart ? 'bookmark-check' : 'list'} color={smart ? colors.accentText : colors.accentText} size={iconSize.lg} />
       <Text style={[typography.cardTitle, { color: colors.text, flex: 1 }]}>{name}</Text>
       <Text style={[typography.label, { color: colors.textSecondary }]}>{count}</Text>
       <Icon name="chevron-right" color={colors.textSecondary} />

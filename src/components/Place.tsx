@@ -2,7 +2,7 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { formatDate, hostOf, openExternal } from '@/lib/format';
-import { colors, iconSize, radii, space, states, touchTarget, typography } from '@/lib/tokens';
+import { brand, fonts, colors, iconSize, radii, space, states, themed, touchTarget, typography } from '@/lib/tokens';
 import {
   DISCOVERY_KIND_LABELS,
   VERIFICATION_LABELS,
@@ -44,7 +44,7 @@ export function PlaceListItem({ place, categoryName }: { place: SavedPlace; cate
   return (
     <Card onPress={() => router.push(`/lugar/${place.id}`)} accessibilityLabel={label} style={styles.item}>
       <View style={styles.thumb}>
-        <Icon name="pin" color={place.lat != null ? colors.blueText : colors.textSecondary} size={iconSize.lg} />
+        <Icon name="pin" color={place.lat != null ? colors.accentText : colors.textSecondary} size={iconSize.lg} />
       </View>
       <View style={{ flex: 1, gap: 4 }}>
         <Row gap={space[1]}>
@@ -101,7 +101,7 @@ export function DiscoveryCard({
         {item.summary ? <Text style={[typography.body, { color: colors.text }]}>{item.summary}</Text> : null}
         {reason ? (
           <Row gap={space[1]}>
-            <Icon name="sparkles" color={colors.lime} size={iconSize.sm} />
+            <Icon name="sparkles" color={colors.accentText} size={iconSize.sm} />
             <Text style={[typography.caption, { color: colors.textSecondary, flex: 1 }]}>{reason}</Text>
           </Row>
         ) : null}
@@ -131,8 +131,8 @@ function DiscoveryButton({ icon, label, onPress, pressed }: { icon: IconName; la
       accessibilityState={pressed === undefined ? undefined : { selected: pressed }}
       style={({ pressed: p }) => [styles.smallBtn, { opacity: p ? states.pressedOpacity : 1 }]}
     >
-      <Icon name={icon} size={iconSize.sm} color={pressed ? colors.blueText : colors.text} />
-      <Text style={[typography.label, { color: pressed ? colors.blueText : colors.text }]}>{label}</Text>
+      <Icon name={icon} size={iconSize.sm} color={pressed ? colors.accentText : colors.text} />
+      <Text style={[typography.label, { color: pressed ? colors.accentText : colors.text }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -156,8 +156,8 @@ export function SourceLine({
       {url ? (
         <Pressable onPress={() => openExternal(url)} accessibilityRole="link" hitSlop={10}>
           <Row gap={4}>
-            <Text style={[typography.caption, { color: colors.blueText, textDecorationLine: 'underline' }]}>Abrir fuente ({hostOf(url)})</Text>
-            <Icon name="external" size={14} color={colors.blueText} />
+            <Text style={[typography.caption, { color: colors.accentText, textDecorationLine: 'underline' }]}>Abrir fuente ({hostOf(url)})</Text>
+            <Icon name="external" size={14} color={colors.accentText} />
           </Row>
         </Pressable>
       ) : null}
@@ -165,18 +165,108 @@ export function SourceLine({
   );
 }
 
-const styles = StyleSheet.create({
-  item: { flexDirection: 'row', alignItems: 'center', gap: space[3], paddingVertical: space[3] },
-  thumb: { width: 48, height: 48, borderRadius: radii.sm, backgroundColor: colors.surface0, alignItems: 'center', justifyContent: 'center' },
-  cover: { padding: space[4], paddingTop: space[6], gap: space[1], backgroundColor: colors.surface0, borderBottomWidth: 3, borderBottomColor: colors.lime },
-  smallBtn: {
-    minHeight: touchTarget - 4,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space[1],
-    paddingHorizontal: space[3],
-    borderRadius: radii.sm,
-    borderWidth: 1,
-    borderColor: colors.outline,
-  },
-});
+const styles = themed(() =>
+  StyleSheet.create({
+    item: { flexDirection: 'row', alignItems: 'center', gap: space[3], paddingVertical: space[3] },
+    thumb: { width: 48, height: 48, borderRadius: radii.sm, backgroundColor: colors.surface0, alignItems: 'center', justifyContent: 'center' },
+    cover: {
+      padding: space[4],
+      paddingTop: space[6],
+      gap: space[1],
+      backgroundColor: colors.surface0,
+      borderBottomWidth: 3,
+      borderBottomColor: colors.accentText,
+    },
+    smallBtn: {
+      minHeight: touchTarget - 4,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[1],
+      paddingHorizontal: space[3],
+      borderRadius: radii.sm,
+      borderWidth: 1,
+      borderColor: colors.outline,
+    },
+  }),
+);
+
+/** Acceso rápido por categoría (lámina): icono + nombre en un recuadro. */
+export function CategoryShortcut({ label, icon, onPress }: { label: string; icon: IconName; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [shortcut.box, { opacity: pressed ? states.pressedOpacity : 1 }]}
+    >
+      <Icon name={icon} size={iconSize.lg} color={colors.text} />
+      <Text style={[typography.caption, { color: colors.text, fontSize: 12 }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+/**
+ * Tarjeta «de papel» de Recomendados (lámina): portada, título, zona y estado de verificación.
+ * Sin foto autorizada no se inventa una: portada tinta con la categoría y la zona. Sin valoraciones (no hay datos).
+ */
+export function RecommendedCard({ item, categoryName, onPress }: { item: DiscoveryItem; categoryName: string | null; onPress: () => void }) {
+  const where = [item.place?.zone, categoryName].filter(Boolean).join(' · ');
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="link"
+      accessibilityLabel={[item.title, where, VERIFICATION_LABELS[item.verification]].filter(Boolean).join('. ')}
+      style={({ pressed }) => [recCard.card, { opacity: pressed ? states.pressedOpacity : 1 }]}
+    >
+      <View style={recCard.cover}>
+        <Text style={[typography.overline, { color: brand.cream }]}>{categoryName ?? 'Gijón'}</Text>
+        <View style={recCard.stripe} />
+      </View>
+      <View style={{ padding: space[3], gap: space[1] }}>
+        <Text style={[typography.cardTitle, { color: colors.onPaper }]} numberOfLines={2}>
+          {item.title}
+        </Text>
+        {where ? (
+          <Row gap={space[1]}>
+            <Icon name="pin" size={iconSize.sm} color={colors.onPaperSecondary} />
+            <Text style={[typography.caption, { color: colors.onPaperSecondary, flex: 1 }]} numberOfLines={1}>
+              {where}
+            </Text>
+          </Row>
+        ) : null}
+        <Row gap={space[1]}>
+          <Icon name={item.verification === 'confirmed' ? 'check-circle' : 'alert'} size={iconSize.sm} color={colors.onPaperSecondary} />
+          <Text style={[typography.caption, { color: colors.onPaperSecondary, fontFamily: fonts.bodySemibold }]}>{VERIFICATION_LABELS[item.verification]}</Text>
+        </Row>
+      </View>
+    </Pressable>
+  );
+}
+
+const shortcut = themed(() =>
+  StyleSheet.create({
+    box: {
+      flexGrow: 1,
+      flexBasis: 0,
+      minHeight: 76,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: space[1],
+      paddingHorizontal: 2,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      borderColor: colors.outline,
+      backgroundColor: colors.card,
+    },
+  }),
+);
+
+const recCard = themed(() =>
+  StyleSheet.create({
+    card: { width: 232, borderRadius: radii.lg, overflow: 'hidden', backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.border },
+    cover: { height: 92, padding: space[3], justifyContent: 'space-between', backgroundColor: brand.ink },
+    stripe: { height: 4, width: 48, borderRadius: 2, backgroundColor: brand.lime },
+  }),
+);

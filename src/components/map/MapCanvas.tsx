@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { WebView as RawWebView, type WebViewMessageEvent } from 'react-native-webview';
 import type { AndroidWebViewProps } from 'react-native-webview/lib/WebViewTypes';
 import { colors } from '@/lib/tokens';
-import { clusterHtml, markerHtml, TILE_ATTRIBUTION, TILE_URL, type MapCanvasProps, type MapMarker } from './mapShared';
+import { clusterHtml, markerHtml, TILE_ATTRIBUTION, TILE_URL, tileCss, type MapCanvasProps, type MapMarker } from './mapShared';
 
 const LEAFLET = 'https://unpkg.com/leaflet@1.9.4/dist';
 const CLUSTER = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist';
@@ -17,12 +17,12 @@ const WebView = RawWebView as unknown as ComponentType<AndroidWebViewProps & { r
 function html(center: MapCanvasProps['center']) {
   return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <link rel="stylesheet" href="${LEAFLET}/leaflet.css"><link rel="stylesheet" href="${CLUSTER}/MarkerCluster.css">
-<style>html,body,#m{margin:0;height:100%;background:${colors.surface1}}</style></head><body><div id="m"></div>
+<style>html,body,#m{margin:0;height:100%;background:${colors.bg}}${tileCss()}</style></head><body><div id="m"></div>
 <script src="${LEAFLET}/leaflet.js"></script><script src="${CLUSTER}/leaflet.markercluster.js"></script>
 <script>
 const send = (o) => window.ReactNativeWebView.postMessage(JSON.stringify(o));
 const map = L.map('m').setView([${center.lat}, ${center.lng}], ${center.zoom});
-L.tileLayer(${JSON.stringify(TILE_URL)}, { attribution: ${JSON.stringify(TILE_ATTRIBUTION)}, maxZoom: 19 }).addTo(map);
+L.tileLayer(${JSON.stringify(TILE_URL)}, { attribution: ${JSON.stringify(TILE_ATTRIBUTION)}, maxZoom: 19, className: 'ruvak-tiles' }).addTo(map);
 const group = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 48,
   iconCreateFunction: (c) => L.divIcon({ html: ${JSON.stringify(clusterHtml(0))}.replace('>0<', '>' + c.getChildCount() + '<'), className: '', iconSize: [40, 40] }) });
 map.addLayer(group);
@@ -72,7 +72,7 @@ export default function MapCanvas({ markers, center, selected, onSelect, fitToMa
 
   return (
     <View style={{ flex: 1, minHeight: 320 }} accessibilityLabel="Mapa">
-      <WebView ref={web} originWhitelist={['*']} source={source} onMessage={onMessage} style={{ flex: 1, backgroundColor: colors.surface1 }} />
+      <WebView ref={web} originWhitelist={['*']} source={source} onMessage={onMessage} style={{ flex: 1, backgroundColor: colors.bg }} />
     </View>
   );
 }

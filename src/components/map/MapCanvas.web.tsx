@@ -4,7 +4,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import { useEffect, useRef } from 'react';
-import { clusterHtml, markerHtml, TILE_ATTRIBUTION, TILE_URL, type MapCanvasProps } from './mapShared';
+import { clusterHtml, markerHtml, TILE_ATTRIBUTION, TILE_URL, tileCss, type MapCanvasProps } from './mapShared';
 
 export default function MapCanvas({ markers, center, selected, onSelect, fitToMarkers }: MapCanvasProps) {
   const host = useRef<HTMLDivElement>(null);
@@ -18,7 +18,10 @@ export default function MapCanvas({ markers, center, selected, onSelect, fitToMa
   useEffect(() => {
     const el = host.current!;
     const m = L.map(el, { zoomControl: true, attributionControl: true }).setView([center.lat, center.lng], center.zoom);
-    L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION, maxZoom: 19 }).addTo(m);
+    const css = document.createElement('style');
+    css.textContent = tileCss();
+    document.head.appendChild(css);
+    L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION, maxZoom: 19, className: 'ruvak-tiles' }).addTo(m);
     const group = L.markerClusterGroup({
       showCoverageOnHover: false,
       maxClusterRadius: 48,
@@ -29,6 +32,7 @@ export default function MapCanvas({ markers, center, selected, onSelect, fitToMa
     map.current = m;
     layer.current = group;
     return () => {
+      css.remove();
       m.remove();
       map.current = null;
     };

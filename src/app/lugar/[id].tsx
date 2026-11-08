@@ -8,7 +8,7 @@ import { Badge, Button, Card, Chip, confirmAction, ErrorState, Field, H1, H2, In
 import { createCollection, getCollections, getPlace, savePlace, setPlaceArchived, setPlaceCollections, unsavePlace, updateUserPlace } from '@/lib/data';
 import { formatDate, hostOf, mapsUrl, openExternal } from '@/lib/format';
 import { useCategoryName, useSession } from '@/lib/session';
-import { colors, iconSize, radii, space, states, touchTarget, typography } from '@/lib/tokens';
+import { colors, iconSize, radii, space, states, themed, touchTarget, typography } from '@/lib/tokens';
 import { SOURCE_TYPE_LABELS, VISIT_STATUS_LABELS, type VisitStatus } from '@/lib/types';
 import { useLoad } from '@/lib/useLoad';
 
@@ -103,7 +103,7 @@ export default function PlaceScreen() {
       ) : null}
 
       <View style={{ gap: space[2] }}>
-        <Overline color={colors.lime}>{[cat, place.zone].filter(Boolean).join(' · ') || 'Lugar'}</Overline>
+        <Overline color={colors.accentText}>{[cat, place.zone].filter(Boolean).join(' · ') || 'Lugar'}</Overline>
         <Row gap={space[2]} style={{ alignItems: 'flex-start' }}>
           <H1 style={{ flex: 1 }}>{place.name}</H1>
           <IconButton
@@ -244,7 +244,7 @@ function NoteCard({ initialNote, initialTags, onSave }: { initialNote: string; i
   return (
     <Card style={{ borderColor: colors.outline }}>
       <Row gap={space[2]}>
-        <Icon name="shield" color={colors.lime} size={iconSize.md} />
+        <Icon name="shield" color={colors.accentText} size={iconSize.md} />
         <H2>Tu nota privada</H2>
       </Row>
       <P muted style={{ fontSize: 14 }}>
@@ -280,9 +280,9 @@ function InfoRow({ icon, label, value, onPress }: { icon: IconName; label: strin
       <Icon name={icon} color={colors.textSecondary} />
       <View style={{ flex: 1 }}>
         <Text style={[typography.caption, { color: colors.textSecondary }]}>{label}</Text>
-        <Text style={[typography.body, { color: onPress ? colors.blueText : colors.text }]}>{value}</Text>
+        <Text style={[typography.body, { color: onPress ? colors.accentText : colors.text }]}>{value}</Text>
       </View>
-      {onPress ? <Icon name="external" color={colors.blueText} size={iconSize.sm} /> : null}
+      {onPress ? <Icon name="external" color={colors.accentText} size={iconSize.sm} /> : null}
     </Row>
   );
   return onPress ? (
@@ -294,20 +294,22 @@ function InfoRow({ icon, label, value, onPress }: { icon: IconName; label: strin
   );
 }
 
-const styles = StyleSheet.create({
-  hero: { width: '100%', aspectRatio: 16 / 9, borderRadius: radii.md, backgroundColor: colors.surface0 },
-  statusRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
-  statusBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space[1],
-    minHeight: touchTarget,
-    paddingHorizontal: space[3],
-    borderRadius: radii.sm,
-    borderWidth: 1,
-    borderColor: colors.outline,
-    backgroundColor: colors.raised,
-  },
-  statusSel: { backgroundColor: colors.primary, borderColor: colors.primary },
-  source: { gap: space[1], paddingVertical: space[2], borderTopWidth: 1, borderTopColor: colors.border },
-});
+const styles = themed(() =>
+  StyleSheet.create({
+    hero: { width: '100%', aspectRatio: 16 / 9, borderRadius: radii.md, backgroundColor: colors.surface0 },
+    statusRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
+    statusBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[1],
+      minHeight: touchTarget,
+      paddingHorizontal: space[3],
+      borderRadius: radii.sm,
+      borderWidth: 1,
+      borderColor: colors.outline,
+      backgroundColor: colors.raised,
+    },
+    statusSel: { backgroundColor: colors.primary, borderColor: colors.primary },
+    source: { gap: space[1], paddingVertical: space[2], borderTopWidth: 1, borderTopColor: colors.border },
+  }),
+);

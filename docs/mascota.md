@@ -23,7 +23,10 @@ recortan y componen: **nunca se redibujan**.
 | `transformacion` | transformacion-gato-grajo.webp | Bienvenida (gato en tu ciudad, grajo cuando viajes) |
 | `grajo-vuelo` | grajo-vuelo.webp | Viajes |
 | `grajo-ataque` | grajo-ataque.webp | Disponible, sin usar todavía |
-| (generadas, sin conectar aún) | gato-sorprendido, gato-sentado-mirada, gato-caminando, gato-de-pie, gato-sentado-perfil | `ruvak_gato_{sorprendido,mirada,caminando,de-pie,perfil}_v1.webp`; falta añadirlas a `POSES` y usarlas en pantallas |
+| `gato-perfil` | gato-sentado-perfil.webp | Portada de Inicio |
+| `gato-mirada` | gato-sentado-mirada.webp | Cabecera de Explorar |
+| `gato-sorprendido` | gato-sorprendido.webp | Estado vacío de Inicio |
+| `gato-caminando`, `gato-de-pie` | gato-caminando.webp, gato-de-pie.webp | Disponibles, sin usar todavía |
 
 Para añadir una pose: original en `originales/`, entrada en `CHARACTER` de `prepare-ruvak.mjs`, ejecutar el script
 y añadirla a `POSES` en `Ruvak.tsx`.

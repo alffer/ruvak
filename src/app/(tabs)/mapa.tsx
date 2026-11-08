@@ -9,7 +9,7 @@ import { getCollections, getDiscovery, getMyPlaces } from '@/lib/data';
 import { EMPTY_FILTERS, filterPlaces, type StatusFilter } from '@/lib/filters';
 import { plural } from '@/lib/format';
 import { useCategoryName, useSession } from '@/lib/session';
-import { colors, elevation, layout, radii, space, typography } from '@/lib/tokens';
+import { colors, elevation, layout, radii, space, themed, typography } from '@/lib/tokens';
 import { useLoad } from '@/lib/useLoad';
 
 // El mapa (Leaflet) se carga solo al abrir esta pestaña (§6 Rendimiento: mapa bajo demanda).
@@ -174,31 +174,33 @@ function MapLegend() {
   );
 }
 
-const styles = StyleSheet.create({
-  bar: {
-    padding: space[3],
-    gap: space[2],
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    width: '100%',
-    maxWidth: layout.maxContent,
-    alignSelf: 'center',
-  },
-  list: { padding: space[4], gap: space[3], width: '100%', maxWidth: layout.maxContent, alignSelf: 'center' },
-  sheet: {
-    position: 'absolute',
-    left: space[3],
-    right: space[3],
-    bottom: space[3],
-    maxWidth: 520,
-    alignSelf: 'center',
-    backgroundColor: colors.card,
-    borderRadius: radii.lg,
-    padding: space[4],
-    gap: space[3],
-    borderWidth: 1,
-    borderColor: colors.border,
-    zIndex: 1000,
-    ...elevation.popover,
-  },
-});
+const styles = themed(() =>
+  StyleSheet.create({
+    bar: {
+      padding: space[3],
+      gap: space[2],
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      width: '100%',
+      maxWidth: layout.maxContent,
+      alignSelf: 'center',
+    },
+    list: { padding: space[4], gap: space[3], width: '100%', maxWidth: layout.maxContent, alignSelf: 'center' },
+    sheet: {
+      position: 'absolute',
+      left: space[3],
+      right: space[3],
+      bottom: space[3],
+      maxWidth: 520,
+      alignSelf: 'center',
+      backgroundColor: colors.card,
+      borderRadius: radii.lg,
+      padding: space[4],
+      gap: space[3],
+      borderWidth: 1,
+      borderColor: colors.border,
+      zIndex: 1000,
+      ...elevation.popover,
+    },
+  }),
+);
