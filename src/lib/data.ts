@@ -447,6 +447,11 @@ export async function saveDiscovery(id: number | null, d: DiscoveryInput): Promi
   return r.id;
 }
 
+/** Publica o retira un contenido. Solo lo usa el panel editorial (RLS lo limita a administradores). */
+export async function setDiscoveryPublished(id: number, published: boolean) {
+  check(await supabase.from('discovery_items').update({ published }).eq('id', id));
+}
+
 export async function deleteDiscovery(id: number) {
   check(await supabase.from('discovery_items').delete().eq('id', id));
 }

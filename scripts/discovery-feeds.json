@@ -1,0 +1,9 @@
+{
+  "_nota": "Fuentes de novedades de Gijón. Cada una debe tener RSS público y permitir este uso. Si una falla, se salta y queda anotada en el log. Revisar términos antes de añadir ninguna.",
+  "fuentes": [
+    { "nombre": "MiGijón", "url": "https://migijon.com/feed" },
+    { "nombre": "Ayuntamiento de Gijón", "url": "https://www.gijon.es/rss" },
+    { "nombre": "El Comercio", "url": "https://www.elcomercio.es/rss/" },
+    { "nombre": "La Nueva España", "url": "https://www.lne.es/rss/" }
+  ]
+}

@@ -1,0 +1,25 @@
+name: Novedades de Gijón (borradores diarios)
+
+# Cada día busca novedades en las fuentes de scripts/discovery-feeds.json y guarda BORRADORES.
+# No publica nada: la publicación la decide la persona editorial en el panel de administración.
+on:
+  schedule:
+    - cron: "15 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Buscar novedades (borradores)
+        run: node scripts/discovery-sync.mjs
